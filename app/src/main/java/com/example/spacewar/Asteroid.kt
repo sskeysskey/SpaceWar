@@ -1,0 +1,125 @@
+package com.example.spacewar
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
+import androidx.appcompat.content.res.AppCompatResources
+import java.util.Timer
+import java.util.TimerTask
+
+class Asteroid(private val bitmap: Bitmap, private var x: Float, var y: Float, var health: Int) {
+    private val speed = 5f
+    private val width = bitmap.width
+    private val height = bitmap.height
+
+    val boundingBox: RectF
+        get() = RectF(x, y, x + width, y + height)
+
+    fun update() {
+        y += speed
+    }
+
+    fun draw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, x, y, null)
+    }
+}
+
+class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
+    private val asteroids = mutableListOf<Asteroid>()
+
+    private fun scaleBitmapToMaxWidth(bitmap: Bitmap, maxWidth: Int): Bitmap {
+        return if (bitmap.width <= maxWidth) {
+            bitmap
+        } else {
+            val scaleRatio = maxWidth.toFloat() / bitmap.width
+            val newHeight = (bitmap.height * scaleRatio).toInt()
+            Bitmap.createScaledBitmap(bitmap, maxWidth, newHeight, true)
+        }
+    }
+
+    private fun createRandomAsteroid(): Asteroid {
+        val asteroidBitmaps = listOf(
+            R.drawable.asteroid1,
+            R.drawable.asteroid2,
+            R.drawable.asteroid3
+        )
+
+        val asteroidHealth = mapOf(
+            R.drawable.asteroid1 to 3,
+            R.drawable.asteroid2 to 5,
+            R.drawable.asteroid3 to 7
+        )
+
+        val randomIndex = asteroidBitmaps.indices.random()
+        val randomResourceId = asteroidBitmaps[randomIndex]
+        val randomHealth = asteroidHealth.getValue(randomResourceId)
+
+        val rawAsteroidBitmap = (AppCompatResources.getDrawable(context, randomResourceId) as BitmapDrawable).bitmap
+        val asteroidBitmap = scaleBitmapToMaxWidth(rawAsteroidBitmap, width)
+
+        val x = (0..width - asteroidBitmap.width).random().toFloat()
+        val y = -asteroidBitmap.height.toFloat()
+
+        return Asteroid(asteroidBitmap, x, y, randomHealth)
+    }
+
+    fun updateAsteroids() {
+        synchronized(asteroids) {
+            val iterator = asteroids.iterator()
+            while (iterator.hasNext()) {
+                val asteroid = iterator.next()
+                asteroid.update()
+                // 如果陨石飞出屏幕，从列表中移除
+                if (asteroid.y > height) {
+                    iterator.remove()
+                }
+            }
+        }
+    }
+
+    fun checkBulletAsteroidCollision(){
+        synchronized(bullets) {
+            synchronized(asteroids) {
+                val bulletsToRemove = mutableListOf<Bullet>()
+                val asteroidsToRemove = mutableListOf<Asteroid>()
+
+                for (bullet in bullets) {
+                    for (asteroid in asteroids) {
+                        if (RectF.intersects(bullet.boundingBox, asteroid.boundingBox)) {
+                            // 子弹和陨石碰撞
+                            bulletsToRemove.add(bullet)
+                            asteroid.health -= 1
+                            if (asteroid.health <= 0) {
+                                asteroidsToRemove.add(asteroid)
+                            }
+                            break
+                        }
+                    }
+                }
+                bullets.removeAll(bulletsToRemove)
+                asteroids.removeAll(asteroidsToRemove)
+            }
+        }
+    }
+
+    fun drawAsteroids(canvas: Canvas) {
+        synchronized(asteroids) {
+            asteroids.forEach { asteroid -> asteroid.draw(canvas) }
+        }
+    }
+
+    init {
+        val asteroidTimer = Timer()
+        asteroidTimer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                val asteroid = createRandomAsteroid()
+                synchronized(asteroids) {
+                    asteroids.add(asteroid)
+                }
+            }
+        }, 0, 1000) // 每 1000 毫秒生成一个陨石
+    }
+
+}
