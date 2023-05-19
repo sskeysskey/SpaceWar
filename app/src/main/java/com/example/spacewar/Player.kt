@@ -16,6 +16,9 @@ class Player(val bitmap: Bitmap, private val screenWidth: Int, private val scree
     private val width = bitmap.width
     private val height = bitmap.height
 
+    // 添加 powerUpLevel
+    var powerUpLevel = 0
+
     // 飞机的碰撞箱
     val boundingBox: RectF
         get() = RectF(x, y, x + width, y + height)

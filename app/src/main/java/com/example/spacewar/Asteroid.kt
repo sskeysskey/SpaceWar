@@ -10,7 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
 
-class Asteroid(private val bitmap: Bitmap, private var x: Float, var y: Float, var health: Int) {
+class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var health: Int) {
     private val speed = 5f
     private val width = bitmap.width
     private val height = bitmap.height
@@ -35,8 +35,17 @@ class Asteroid(private val bitmap: Bitmap, private var x: Float, var y: Float, v
     }
 }
 
+
 class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
     private val asteroids = mutableListOf<Asteroid>()
+    var powerUp: PowerUp? = null
+    private var powerUpUsed = false
+
+    private fun createPowerUp(x: Float, y: Float) {
+        val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.power_up) as BitmapDrawable).bitmap
+        powerUp = PowerUp(powerUpBitmap, x, y)
+    }
+
 
     private fun scaleBitmapToMaxWidth(bitmap: Bitmap, maxWidth: Int): Bitmap {
         return if (bitmap.width <= maxWidth) {
@@ -58,7 +67,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         val asteroidHealth = mapOf(
             R.drawable.asteroid1 to 3,
             R.drawable.asteroid2 to 5,
-            R.drawable.asteroid3 to 7
+            R.drawable.asteroid3 to 9
         )
 
         val randomIndex = asteroidBitmaps.indices.random()
@@ -102,6 +111,12 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                             asteroid.health -= 1
                             if (asteroid.health <= 0) {
                                 asteroidsToRemove.add(asteroid)
+
+                                // 如果这是第一次击碎任何陨石，并且道具还没有被使用过，那么在陨石的位置创建一个道具
+                                if (!powerUpUsed) {
+                                    createPowerUp(asteroid.x, asteroid.y)
+                                    powerUpUsed = true
+                                }
                             }
                             break
                         }
@@ -112,6 +127,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
             }
         }
     }
+
 
     fun drawAsteroids(canvas: Canvas) {
         synchronized(asteroids) {

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -34,6 +35,16 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private var updateThread: Thread? = null
     private var running = true
     private var asteroidManager: AsteroidManager? = null
+
+    private fun checkShipPowerUpCollision() {
+        val powerUp = asteroidManager?.powerUp
+
+        if (powerUp != null && player != null && RectF.intersects(player!!.boundingBox, powerUp.boundingBox)) {
+            player!!.powerUpLevel += 1
+            asteroidManager?.powerUp = null
+        }
+    }
+
 
     init {
         setOnTouchListener { _, event ->
@@ -102,6 +113,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             bullets.forEach { it.draw(canvas) }
         }
         asteroidManager?.drawAsteroids(canvas)
+        asteroidManager?.powerUp?.draw(canvas) // 绘制道具
     }
 
     private fun update() {
@@ -119,6 +131,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             asteroidManager?.updateAsteroids()
             asteroidManager?.checkBulletAsteroidCollision()
         }
+        asteroidManager?.powerUp?.update() // 更新道具位置
+        checkShipPowerUpCollision()
     }
 
 
