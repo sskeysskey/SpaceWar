@@ -40,6 +40,8 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private val asteroids = mutableListOf<Asteroid>()
     var powerUp: PowerUp? = null
     private var powerUpUsed = false
+    private var asteroidsDestroyed = 0
+
 
     private fun createPowerUp(x: Float, y: Float) {
         val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.power_up) as BitmapDrawable).bitmap
@@ -111,9 +113,10 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                             asteroid.health -= 1
                             if (asteroid.health <= 0) {
                                 asteroidsToRemove.add(asteroid)
+                                asteroidsDestroyed += 1
 
-                                // 如果这是第一次击碎任何陨石，并且道具还没有被使用过，那么在陨石的位置创建一个道具
-                                if (!powerUpUsed) {
+                                // 如果这是第一次击碎第5块陨石，并且道具还没有被使用过，那么在陨石的位置创建一个道具
+                                if (asteroidsDestroyed == 5 && !powerUpUsed) {
                                     createPowerUp(asteroid.x, asteroid.y)
                                     powerUpUsed = true
                                 }
@@ -127,7 +130,6 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
             }
         }
     }
-
 
     fun drawAsteroids(canvas: Canvas) {
         synchronized(asteroids) {
@@ -144,7 +146,6 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                     asteroids.add(asteroid)
                 }
             }
-        }, 0, 1000) // 每 1000 毫秒生成一个陨石
+        }, 0, 1500) // 每 多少 毫秒生成一个陨石
     }
-
 }

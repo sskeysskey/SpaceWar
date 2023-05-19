@@ -20,7 +20,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private val plane: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.player) as BitmapDrawable).bitmap
     private val background: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.background) as BitmapDrawable).bitmap
     private var backgroundY = 0f
-    private var backgroundSpeed = 5f
+    private var backgroundSpeed = 3f //背景滚动速度
     private var player: Player? = null
 
     private val bulletBitmap: Bitmap = run {
@@ -70,15 +70,35 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             override fun run() {
                 if (!running) return
                 player?.let {
-                    val bulletX = it.x + it.bitmap.width / 2f - bulletBitmap.width / 2f
-                    val bulletY = it.y - bulletBitmap.height
-                    val bullet = Bullet(bulletBitmap, bulletX, bulletY)
-                    synchronized(bullets) {
-                        bullets.add(bullet)
+                    when (it.powerUpLevel) {
+                        0 -> {
+                            // 如果火力等级为 0，只发射一颗子弹
+                            val bulletX = it.x + it.bitmap.width / 2f - bulletBitmap.width / 2f
+                            val bulletY = it.y - bulletBitmap.height
+                            val bullet = Bullet(bulletBitmap, bulletX, bulletY)
+                            synchronized(bullets) {
+                                bullets.add(bullet)
+                            }
+                        }
+                        else -> {
+                            // 如果火力等级大于 0，发射两颗子弹
+                            // 修改这里，让子弹的发射位置更加靠近飞船的中心
+                            val bulletX1 = it.x + it.bitmap.width * 0.25f - bulletBitmap.width / 2f
+                            val bulletX2 = it.x + it.bitmap.width * 0.75f - bulletBitmap.width / 2f
+                            val bulletY = it.y - bulletBitmap.height
+                            val bullet1 = Bullet(bulletBitmap, bulletX1, bulletY)
+                            val bullet2 = Bullet(bulletBitmap, bulletX2, bulletY)
+                            synchronized(bullets) {
+                                bullets.add(bullet1)
+                                bullets.add(bullet2)
+                            }
+                        }
                     }
                 }
             }
-        }, 0, 200) // 每 多少 毫秒发射一颗子弹
+        }, 0, 200) // 每 200 毫秒发射一颗子弹
+
+
     }
     private fun updateBullets() {
         synchronized(bullets) {
