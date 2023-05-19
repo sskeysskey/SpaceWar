@@ -3,6 +3,7 @@ package com.example.spacewar
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
@@ -13,16 +14,24 @@ class Asteroid(private val bitmap: Bitmap, private var x: Float, var y: Float, v
     private val speed = 5f
     private val width = bitmap.width
     private val height = bitmap.height
+    private var rotation = 0f // 添加了旋转角度属性
+    private val matrix = Matrix()
 
     val boundingBox: RectF
         get() = RectF(x, y, x + width, y + height)
 
     fun update() {
         y += speed
+        rotation = (rotation + 1) % 360 // 在每次 update 时更新旋转角度
     }
 
     fun draw(canvas: Canvas) {
-        canvas.drawBitmap(bitmap, x, y, null)
+        matrix.reset()
+        matrix.postTranslate(-bitmap.width / 2f, -bitmap.height / 2f) // move the bitmap to fix its pivot to center
+        matrix.postRotate(rotation) // rotate the bitmap
+        matrix.postTranslate(x + bitmap.width / 2f, y + bitmap.height / 2f) // lastly move the bitmap to its desired location
+
+        canvas.drawBitmap(bitmap, matrix, null)
     }
 }
 
