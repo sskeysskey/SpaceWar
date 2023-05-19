@@ -30,11 +30,9 @@ class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var healt
         matrix.postTranslate(-bitmap.width / 2f, -bitmap.height / 2f) // move the bitmap to fix its pivot to center
         matrix.postRotate(rotation) // rotate the bitmap
         matrix.postTranslate(x + bitmap.width / 2f, y + bitmap.height / 2f) // lastly move the bitmap to its desired location
-
         canvas.drawBitmap(bitmap, matrix, null)
     }
 }
-
 
 class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
     private val asteroids = mutableListOf<Asteroid>()
@@ -42,12 +40,10 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var powerUpUsed = false
     private var asteroidsDestroyed = 0
 
-
     private fun createPowerUp(x: Float, y: Float) {
         val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.power_up) as BitmapDrawable).bitmap
         powerUp = PowerUp(powerUpBitmap, x, y)
     }
-
 
     private fun scaleBitmapToMaxWidth(bitmap: Bitmap, maxWidth: Int): Bitmap {
         return if (bitmap.width <= maxWidth) {
