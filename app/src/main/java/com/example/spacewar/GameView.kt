@@ -28,7 +28,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private fun checkPlayerPowerUpCollision() {
         val powerUp = asteroidManager?.powerUp
 
-        if (powerUp != null && player != null && RectF.intersects(player!!.boundingBox, powerUp.boundingBox) && player!!.powerUpLevel < 3) {
+        if (powerUp != null && player != null && RectF.intersects(player!!.boundingBox, powerUp.boundingBox) && player!!.powerUpLevel < 4) {
             player!!.powerUpLevel += 1
             asteroidManager?.powerUp = null
         }

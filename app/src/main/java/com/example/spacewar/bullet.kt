@@ -9,8 +9,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
 
-class Bullet(val bitmap: Bitmap, private var x: Float, var y: Float) {
-    private val speed = 20f // 子弹发射的速度
+class Bullet(val bitmap: Bitmap, private var x: Float, var y: Float, private val speedX: Float = 0f) {
+    private val speedY = 20f // 子弹发射的速度
     private val width = bitmap.width
     private val height = bitmap.height
 
@@ -18,7 +18,8 @@ class Bullet(val bitmap: Bitmap, private var x: Float, var y: Float) {
         get() = RectF(x, y, x + width, y + height)
 
     fun update() {
-        y -= speed
+        y -= speedY
+        x += speedX // 更新x坐标
     }
 
     fun draw(canvas: Canvas) {
@@ -62,32 +63,52 @@ class BulletManager(context: Context, private val gameView: GameView) {
                                 bullets.add(bullet2)
                             }
                             2 -> {
-                                // 如果火力等级为 2，发射三颗子弹
-                                val bulletX1 = it.x + it.bitmap.width * 0.25f - bulletBitmap.width / 2f
-                                val bulletX2 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width / 2f
-                                val bulletX3 = it.x + it.bitmap.width * 0.75f - bulletBitmap.width / 2f
-                                val bullet1 = Bullet(bulletBitmap, bulletX1, bulletY)
-                                val bullet2 = Bullet(bulletBitmap, bulletX2, bulletY)
-                                val bullet3 = Bullet(bulletBitmap, bulletX3, bulletY)
-                                bullets.add(bullet1)
-                                bullets.add(bullet2)
-                                bullets.add(bullet3)
+                                // 创建中间的子弹
+                                val middleBulletX = it.x + it.bitmap.width * 0.5f - bulletBitmap.width / 2f
+                                bullets.add(Bullet(bulletBitmap, middleBulletX, bulletY))
+
+                                // 创建向左和向右的子弹，它们的x轴速度为负值和正值
+                                val leftBulletX = it.x + it.bitmap.width * 0.5f - bulletBitmap.width
+                                val rightBulletX = it.x + it.bitmap.width * 0.5f
+                                bullets.add(Bullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
+                                bullets.add(Bullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
                             }
                             3 -> {
-                                // 如果火力等级为 3，发射四颗子弹
-                                val bulletX1 = it.x + it.bitmap.width * 0.25f - bulletBitmap.width / 2f
-                                val bulletX2 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width / 2f
-                                val bulletX3 = it.x + it.bitmap.width * 0.75f - bulletBitmap.width / 2f
-                                val bulletX4 = it.x + it.bitmap.width * 1f - bulletBitmap.width / 2f
-                                val bullet1 = Bullet(bulletBitmap, bulletX1, bulletY)
-                                val bullet2 = Bullet(bulletBitmap, bulletX2, bulletY)
-                                val bullet3 = Bullet(bulletBitmap, bulletX3, bulletY)
-                                val bullet4 = Bullet(bulletBitmap, bulletX4, bulletY)
-                                bullets.add(bullet1)
-                                bullets.add(bullet2)
-                                bullets.add(bullet3)
-                                bullets.add(bullet4)
+                                val leftBulletX = it.x + it.bitmap.width * 0.5f - bulletBitmap.width
+                                val rightBulletX = it.x + it.bitmap.width * 0.5f
+                                bullets.add(Bullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
+                                bullets.add(Bullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
+
+                                // 在中间位置创建两颗子弹，间隔更大
+                                val middleBulletX1 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
+                                val middleBulletX2 = it.x + it.bitmap.width * 0.5f + bulletBitmap.width / 2f
+                                bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
+                                bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
                             }
+
+
+                            4 -> {
+                                // 创建向左和向右的子弹，它们的x轴速度为负值和正值，间隔更大
+                                val leftBulletX1 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width - 3 * bulletBitmap.width
+                                val rightBulletX1 = it.x + it.bitmap.width * 0.5f + 3 * bulletBitmap.width
+                                bullets.add(Bullet(bulletBitmap, leftBulletX1, bulletY, speedX = -5f))
+                                bullets.add(Bullet(bulletBitmap, rightBulletX1, bulletY, speedX = 5f))
+
+                                // 在左右两侧各再增加一颗子弹，间隔更大
+                                val leftBulletX2 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
+                                val rightBulletX2 = it.x + it.bitmap.width * 0.5f + bulletBitmap.width + 4 * bulletBitmap.width
+                                bullets.add(Bullet(bulletBitmap, leftBulletX2, bulletY, speedX = -5f))
+                                bullets.add(Bullet(bulletBitmap, rightBulletX2, bulletY, speedX = 5f))
+
+                                // 在中间位置创建两颗子弹，间隔更大
+                                val middleBulletX1 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
+                                val middleBulletX2 = it.x + it.bitmap.width * 0.5f + bulletBitmap.width / 2f
+                                bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
+                                bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
+                            }
+
+
+
                             else -> {
                                 // 如果火力等级大于 3，打印一个错误消息
                                 println("Invalid powerUpLevel: ${it.powerUpLevel}")
