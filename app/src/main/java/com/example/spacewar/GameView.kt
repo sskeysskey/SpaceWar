@@ -14,7 +14,6 @@ import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 
 class GameView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-
     private val plane: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.player) as BitmapDrawable).bitmap
     private val background: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.background) as BitmapDrawable).bitmap
     private var backgroundY = 0f
@@ -76,7 +75,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         player?.draw(canvas)
         bulletManager.drawBullets(canvas)
         asteroidManager?.drawAsteroids(canvas)
-        asteroidManager?.powerUp?.draw(canvas) // 绘制道具
+        asteroidManager?.powerUp?.draw(canvas)
+        asteroidManager?.drawEnemies(canvas)
     }
 
     private fun update() {
@@ -97,6 +97,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
         asteroidManager?.powerUp?.update()
         checkShipPowerUpCollision()
+        asteroidManager?.updateEnemies()
+        asteroidManager?.checkBulletEnemyCollision()
     }
 
     private fun handleTouchEvent(event: MotionEvent) {

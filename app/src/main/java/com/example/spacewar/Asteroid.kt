@@ -40,6 +40,107 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var powerUpUsed = false
     private var asteroidsDestroyed = 0
 
+    private val enemies = mutableListOf<Enemy>()
+    private var totalAsteroidsCreated = 0
+    private var waveInProgress = false
+
+    private fun createEnemy(enemyType: Int): Enemy {
+        val enemyResourceId = when (enemyType) {
+            1 -> R.drawable.enemy1
+            2 -> R.drawable.enemy2
+            3 -> R.drawable.enemy3
+            4 -> R.drawable.enemy4
+            else -> R.drawable.enemy1
+        }
+        val enemyHealth = when (enemyType) {
+            1 -> 10
+            2 -> 11
+            3 -> 12
+            4 -> 13
+            else -> 13
+        }
+        val enemyBitmap = (AppCompatResources.getDrawable(context, enemyResourceId) as BitmapDrawable).bitmap
+        val x = when (enemyType) {
+            2 -> -enemyBitmap.width.toFloat()
+            4 -> width.toFloat()
+            5 -> width.toFloat()
+            else -> (0..width - enemyBitmap.width).random().toFloat()
+        }
+        val y = when (enemyType) {
+            2, 4 -> height / 4f - enemyBitmap.height / 2f
+            5 -> -enemyBitmap.height.toFloat()
+            else -> -enemyBitmap.height.toFloat()
+        }
+        return Enemy(enemyBitmap, x, y, enemyHealth, enemyType)
+    }
+
+    fun updateEnemies() {
+        synchronized(enemies) {
+            val iterator = enemies.iterator()
+            while (iterator.hasNext()) {
+                val enemy = iterator.next()
+                enemy.update()
+                // 如果敌机飞出屏幕，从列表中移除
+                if (enemy.y > height || enemy.x > width || enemy.x + enemy.bitmap.width < 0) {
+                    iterator.remove()
+                }
+            }
+        }
+        // 当陨石数量达到 20 时，开始生成敌机
+        if (totalAsteroidsCreated >= 6 && enemies.isEmpty() && !waveInProgress) {
+            waveInProgress = true
+            launchEnemyWave()
+        }
+    }
+
+    private fun launchEnemyWave() {
+        val enemyTypes = listOf(1, 2, 3, 4, 5)
+        val delay = 500L
+
+        for (i in 0 until 4) {
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    synchronized(enemies) {
+                        val enemyType = enemyTypes.random()
+                        enemies.add(createEnemy(enemyType))
+                    }
+                }
+            }, delay * i)
+        }
+        waveInProgress = false
+    }
+
+    fun checkBulletEnemyCollision() {
+        synchronized(bullets) {
+            synchronized(enemies) {
+                val bulletsToRemove = mutableListOf<Bullet>()
+                val enemiesToRemove = mutableListOf<Enemy>()
+
+                for (bullet in bullets) {
+                    for (enemy in enemies) {
+                        if (RectF.intersects(bullet.boundingBox, enemy.boundingBox)) {
+                            // 子弹和敌机碰撞
+                            bulletsToRemove.add(bullet)
+                            enemy.health -= 1
+                            if (enemy.health <= 0) {
+                                enemiesToRemove.add(enemy)
+                            }
+                            break
+                        }
+                    }
+                }
+                bullets.removeAll(bulletsToRemove)
+                enemies.removeAll(enemiesToRemove)
+            }
+        }
+    }
+
+    fun drawEnemies(canvas: Canvas) {
+        synchronized(enemies) {
+            enemies.forEach { enemy -> enemy.draw(canvas) }
+        }
+    }
+
     private fun createPowerUp(x: Float, y: Float) {
         val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.power_up) as BitmapDrawable).bitmap
         powerUp = PowerUp(powerUpBitmap, x, y)
@@ -140,8 +241,49 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                 val asteroid = createRandomAsteroid()
                 synchronized(asteroids) {
                     asteroids.add(asteroid)
+                    totalAsteroidsCreated += 1
                 }
             }
         }, 0, 1500) // 每 多少 毫秒生成一个陨石
+    }
+}
+
+class Enemy(
+    val bitmap: Bitmap,
+    var x: Float,
+    var y: Float,
+    var health: Int,
+    private val type: Int
+) {
+    private val speed = 4
+    private val horizontalSpeed = 2
+
+    val boundingBox: RectF
+        get() = RectF(x, y, x + bitmap.width, y + bitmap.height)
+
+    fun update() {
+        when (type) {
+            1 -> y += speed
+            2 -> {
+                x += horizontalSpeed
+                y += speed / 2f
+            }
+            3 -> {
+                x += speed / 2f
+                y += speed
+            }
+            4 -> {
+                x -= horizontalSpeed
+                y += speed / 2f
+            }
+            5 -> {
+                x -= speed / 2f
+                y += speed
+            }
+        }
+    }
+
+    fun draw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, x, y, null)
     }
 }
