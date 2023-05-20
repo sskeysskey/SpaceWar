@@ -37,10 +37,10 @@ class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var healt
 class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
     private val asteroids = mutableListOf<Asteroid>()
     var powerUp: PowerUp? = null
-    private var powerUpUsed = false
     private var asteroidsDestroyed = 0
     private var totalAsteroidsCreated = 0
     private val enemyManager = EnemyManager(context, width, height, bullets)
+    private var asteroidsNeededForPowerUp = 5
 
     fun updateEnemies() {
         synchronized(enemyManager.enemies) {
@@ -157,17 +157,18 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                 for (bullet in bullets) {
                     for (asteroid in asteroids) {
                         if (RectF.intersects(bullet.boundingBox, asteroid.boundingBox)) {
-                            // 子弹和陨石碰撞
                             bulletsToRemove.add(bullet)
                             asteroid.health -= 1
                             if (asteroid.health <= 0) {
                                 asteroidsToRemove.add(asteroid)
                                 asteroidsDestroyed += 1
 
-                                // 如果这是第一次击碎第5块陨石，并且道具还没有被使用过，那么在陨石的位置创建一个道具
-                                if (asteroidsDestroyed == 5 && !powerUpUsed) {
+                                if (asteroidsDestroyed == asteroidsNeededForPowerUp) {
+                                    // 创建道具
                                     createPowerUp(asteroid.x, asteroid.y)
-                                    powerUpUsed = true
+                                    // 清零摧毁的陨石数量并增加下一次需要的陨石数量
+                                    asteroidsDestroyed = 0
+                                    asteroidsNeededForPowerUp += 5
                                 }
                             }
                             break
