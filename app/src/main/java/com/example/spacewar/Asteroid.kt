@@ -57,25 +57,10 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         // 当陨石数量达到 6 时，开始生成敌机
         if (totalAsteroidsCreated >= 6 && enemyManager.enemies.isEmpty() && !enemyManager.waveInProgress) {
             enemyManager.waveInProgress = true
-            launchEnemyWave()
+            enemyManager.launchEnemyWave()
         }
     }
-    private fun launchEnemyWave() {
-        val enemyTypes = listOf(1, 2, 3, 4, 5)
-        val delay = 500L
 
-        for (i in 0 until 4) {
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    synchronized(enemyManager.enemies) {
-                        val enemyType = enemyTypes.random()
-                        enemyManager.enemies.add(enemyManager.createEnemy(enemyType))
-                    }
-                }
-            }, delay * i)
-        }
-        enemyManager.waveInProgress = false
-    }
 
     fun drawEnemies(canvas: Canvas) {
         synchronized(enemyManager.enemies) {

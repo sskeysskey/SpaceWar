@@ -6,6 +6,8 @@ import android.graphics.RectF
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import java.util.Timer
+import java.util.TimerTask
 
 class EnemyManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
     val enemies = mutableListOf<Enemy>()
@@ -40,6 +42,23 @@ class EnemyManager(private val context: Context, private val width: Int, private
             else -> -enemyBitmap.height.toFloat()
         }
         return Enemy(enemyBitmap, x, y, enemyHealth, enemyType)
+    }
+
+    fun launchEnemyWave() {
+        val enemyTypes = listOf(1, 2, 3, 4, 5)
+        val delay = 500L
+
+        for (i in 0 until 4) {
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    synchronized(enemies) {
+                        val enemyType = enemyTypes.random()
+                        enemies.add(createEnemy(enemyType))
+                    }
+                }
+            }, delay * i)
+        }
+        waveInProgress = false
     }
 }
 
