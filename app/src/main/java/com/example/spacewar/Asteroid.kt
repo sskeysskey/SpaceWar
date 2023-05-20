@@ -94,7 +94,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     }
 
     private fun createPowerUp(x: Float, y: Float) {
-        val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.power_up) as BitmapDrawable).bitmap
+        val powerUpBitmap = (AppCompatResources.getDrawable(context, R.drawable.powerup) as BitmapDrawable).bitmap
         powerUp = PowerUp(powerUpBitmap, x, y)
     }
 

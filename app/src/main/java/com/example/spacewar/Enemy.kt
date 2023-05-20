@@ -13,7 +13,6 @@ class EnemyManager(private val context: Context, private val width: Int, private
     val enemies = mutableListOf<Enemy>()
     var waveInProgress = false
 
-    // 将 createEnemy 方法从 AsteroidManager 移动到这里
     fun createEnemy(enemyType: Int): Enemy {
         val enemyResourceId = when (enemyType) {
             1 -> R.drawable.enemy1
@@ -48,7 +47,7 @@ class EnemyManager(private val context: Context, private val width: Int, private
         val enemyTypes = listOf(1, 2, 3, 4, 5)
         val delay = 500L
 
-        for (i in 0 until 4) {
+        for (i in 0 until 2) {
             Timer().schedule(object : TimerTask() {
                 override fun run() {
                     synchronized(enemies) {
