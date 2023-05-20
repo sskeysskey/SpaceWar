@@ -25,7 +25,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private var asteroidManager: AsteroidManager? = null
     private var bulletManager: BulletManager
 
-    private fun checkShipPowerUpCollision() {
+    private fun checkPlayerPowerUpCollision() {
         val powerUp = asteroidManager?.powerUp
 
         if (powerUp != null && player != null && RectF.intersects(player!!.boundingBox, powerUp.boundingBox)) {
@@ -96,7 +96,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             asteroidManager?.checkBulletAsteroidCollision()
         }
         asteroidManager?.powerUp?.update()
-        checkShipPowerUpCollision()
+        checkPlayerPowerUpCollision()
         asteroidManager?.updateEnemies()
         asteroidManager?.checkBulletEnemyCollision()
     }
