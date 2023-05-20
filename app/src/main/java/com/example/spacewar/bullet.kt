@@ -99,7 +99,6 @@ class BulletManager(context: Context, private val gameView: GameView) {
         }, 0, 200) // 每 多少 毫秒创建一颗子弹
     }
 
-
     fun updateBullets() {
         synchronized(bullets) {
             val iterator = bullets.iterator()

@@ -61,7 +61,6 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         }
     }
 
-
     fun drawEnemies(canvas: Canvas) {
         synchronized(enemyManager.enemies) {
             enemyManager.enemies.forEach { enemy -> enemy.draw(canvas) }

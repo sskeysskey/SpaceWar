@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.RectF
 
 class Player(val bitmap: Bitmap, private val screenWidth: Int, private val screenHeight: Int) {
-
     internal var x: Float = (screenWidth - bitmap.width) / 2f
     internal var y: Float = screenHeight * 5 / 6f - bitmap.height / 2f
 
