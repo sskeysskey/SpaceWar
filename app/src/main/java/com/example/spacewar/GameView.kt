@@ -15,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources
 
 class GameView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
     private val plane: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.player) as BitmapDrawable).bitmap
+    private val planeHit: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.player_hit) as BitmapDrawable).bitmap
     private val background: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.background) as BitmapDrawable).bitmap
     private var backgroundY = 0f
     private var backgroundSpeed = 3f //背景滚动速度
@@ -63,7 +64,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (player == null) {
-            player = Player(plane, w, h, context)
+            player = Player(plane, planeHit, w, h, context)
         }
         if (asteroidManager == null) {
             asteroidManager = AsteroidManager(context, w, h, bulletManager.bullets)
@@ -86,6 +87,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     }
 
     private fun update() {
+        player?.updateInvincibleState() // 更新飞机的无敌状态
         (context as Activity).runOnUiThread {
             invalidate()
         }
@@ -116,8 +118,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private fun handleTouchEvent(event: MotionEvent) {
         player?.let {
-            val dx = event.x - it.x - it.bitmap.width / 2
-            val dy = event.y - it.y - it.bitmap.height / 2
+            val dx = event.x - it.x - it.normalBitmap.width / 2
+            val dy = event.y - it.y - it.normalBitmap.height / 2
             it.update(dx / it.speed, dy / it.speed)
         }
     }

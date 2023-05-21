@@ -1,33 +1,58 @@
 package com.example.spacewar
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
-import android.graphics.RectF
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import kotlin.math.sin
 
-class Player(val bitmap: Bitmap, private val screenWidth: Int, private val screenHeight: Int, context: Context) {
-    internal var x: Float = (screenWidth - bitmap.width) / 2f
-    internal var y: Float = screenHeight * 5 / 6f - bitmap.height / 2f
+class Player(
+    val normalBitmap: Bitmap,
+    private val hitBitmap: Bitmap,
+    private val screenWidth: Int,
+    private val screenHeight: Int,
+    context: Context
+) {
+    internal var x: Float = (screenWidth - normalBitmap.width) / 2f
+    internal var y: Float = screenHeight * 5 / 6f - normalBitmap.height / 2f
 
     var speed = 100f
     var powerUpLevel = 0
 
-    private val width = bitmap.width
-    private val height = bitmap.height
+    private val width = normalBitmap.width
+    private val height = normalBitmap.height
 
     private val healthUnit: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.healthbar) as BitmapDrawable).bitmap
     var health: Int = 7
     private val healthBarX: Int = 50
     private val healthBarY: Int = 50
+    var isInvincible = false
 
-    // Added a spacing constant for the health bar units
     private val healthBarSpacing: Int = 10
+
+    private var isHit = false
+    private var hitStartTime: Long = 0
+    private val hitDuration: Long = 1500 //  被击中后颤抖/无敌/模糊的毫秒数
 
     val boundingBox: RectF
         get() = RectF(x, y, x + width, y + height)
+
+    fun hit() {
+        if (!isInvincible) {
+            isHit = true
+            isInvincible = true
+            hitStartTime = System.currentTimeMillis()
+        }
+    }
+
+    fun updateInvincibleState() {
+        // Reset hit and invincible state after duration
+        if (isHit && System.currentTimeMillis() - hitStartTime >= hitDuration) {
+            isHit = false
+            isInvincible = false
+        }
+    }
+
 
     fun update(dx: Float, dy: Float) {
         x += dx * speed
@@ -38,10 +63,23 @@ class Player(val bitmap: Bitmap, private val screenWidth: Int, private val scree
         if (y < 0) y = 0f
         if (x + width > screenWidth) x = screenWidth - width.toFloat()
         if (y + height > screenHeight) y = screenHeight - height.toFloat()
+
+        // Reset hit state after duration
+        if (isHit && System.currentTimeMillis() - hitStartTime >= hitDuration) {
+            isHit = false
+            isInvincible = false
+        }
     }
 
     fun draw(canvas: Canvas) {
-        canvas.drawBitmap(bitmap, x, y, null)
+        // Draw the player
+        if (isHit) {
+            // Draw with hit effect
+            val dx = (sin(System.currentTimeMillis().toDouble() / 15) * 10).toFloat() // Increase shake frequency
+            canvas.drawBitmap(hitBitmap, x + dx, y, null)
+        } else {
+            canvas.drawBitmap(normalBitmap, x, y, null)
+        }
 
         // Draw HealthBar with spacing between units
         for (i in 0 until health) {

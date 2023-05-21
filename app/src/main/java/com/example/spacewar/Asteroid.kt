@@ -43,12 +43,14 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var asteroidsNeededForPowerUp = 5
 
     fun checkPlayerAsteroidCollision(player: Player) {
+        if (player.isInvincible) return
         synchronized(asteroids) {
             val asteroidsToRemove = mutableListOf<Asteroid>()
 
             for (asteroid in asteroids) {
                 if (RectF.intersects(player.boundingBox, asteroid.boundingBox)) {
                     // 玩家和陨石碰撞
+                    player.hit()
                     player.health -= 1 //或其他数值，根据你的设计调整
                     asteroidsToRemove.add(asteroid)
                 }
@@ -58,12 +60,14 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     }
 
     fun checkPlayerEnemyCollision(player: Player) {
+        if (player.isInvincible) return
         synchronized(enemyManager.enemies) {
             val enemiesToRemove = mutableListOf<Enemy>()
 
             for (enemy in enemyManager.enemies) {
                 if (RectF.intersects(player.boundingBox, enemy.boundingBox)) {
                     // 玩家和敌机碰撞
+                    player.hit()
                     player.health -= 1 //或其他数值，根据你的设计调整
                     enemiesToRemove.add(enemy)
                 }
