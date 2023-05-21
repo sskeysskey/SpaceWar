@@ -114,7 +114,7 @@ class BulletManager(context: Context, private val gameView: GameView) {
                             }
                         }
                     }
-                    soundPool.play(shootSoundId, 0.5f, 0.5f, 0, 0, 1f)
+                    soundPool.play(shootSoundId, 0.5f, 0.5f, 0, 0, 2f)
                 }
             }
         }, 0, 200) // 每 多少 毫秒创建一颗子弹

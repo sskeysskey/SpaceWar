@@ -14,7 +14,7 @@ class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var healt
     private val speed = 5f
     private val width = bitmap.width
     private val height = bitmap.height
-    private var rotation = 0f // 添加了旋转角度属性
+    private var rotation = 0f
     private val matrix = Matrix()
 
     val boundingBox: RectF
@@ -39,8 +39,39 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     var powerUp: PowerUp? = null
     private var asteroidsDestroyed = 0
     private var totalAsteroidsCreated = 0
-    private val enemyManager = EnemyManager(context, width, height, bullets)
+    private val enemyManager = EnemyManager(context, width, height)
     private var asteroidsNeededForPowerUp = 5
+
+    fun checkPlayerAsteroidCollision(player: Player) {
+        synchronized(asteroids) {
+            val asteroidsToRemove = mutableListOf<Asteroid>()
+
+            for (asteroid in asteroids) {
+                if (RectF.intersects(player.boundingBox, asteroid.boundingBox)) {
+                    // 玩家和陨石碰撞
+                    player.health -= 1 //或其他数值，根据你的设计调整
+                    asteroidsToRemove.add(asteroid)
+                }
+            }
+            asteroids.removeAll(asteroidsToRemove)
+        }
+    }
+
+    fun checkPlayerEnemyCollision(player: Player) {
+        synchronized(enemyManager.enemies) {
+            val enemiesToRemove = mutableListOf<Enemy>()
+
+            for (enemy in enemyManager.enemies) {
+                if (RectF.intersects(player.boundingBox, enemy.boundingBox)) {
+                    // 玩家和敌机碰撞
+                    player.health -= 1 //或其他数值，根据你的设计调整
+                    enemiesToRemove.add(enemy)
+                }
+            }
+            enemyManager.enemies.removeAll(enemiesToRemove)
+        }
+    }
+
 
     fun updateEnemies() {
         synchronized(enemyManager.enemies) {

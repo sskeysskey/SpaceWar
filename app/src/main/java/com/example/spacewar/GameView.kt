@@ -24,6 +24,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private var running = true
     private var asteroidManager: AsteroidManager? = null
     private var bulletManager: BulletManager
+    private var deathImage: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.death_image) as BitmapDrawable).bitmap
+    private var dead = false
 
     private fun checkPlayerPowerUpCollision() {
         val powerUp = asteroidManager?.powerUp
@@ -61,7 +63,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (player == null) {
-            player = Player(plane, w, h)
+            player = Player(plane, w, h, context)
         }
         if (asteroidManager == null) {
             asteroidManager = AsteroidManager(context, w, h, bulletManager.bullets)
@@ -77,6 +79,10 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         asteroidManager?.drawAsteroids(canvas)
         asteroidManager?.powerUp?.draw(canvas)
         asteroidManager?.drawEnemies(canvas)
+        if (dead) {
+            // 显示死亡图片
+            canvas.drawBitmap(deathImage, (width - deathImage.width) / 2f, (height - deathImage.height) / 2f, null)
+        }
     }
 
     private fun update() {
@@ -98,6 +104,14 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         checkPlayerPowerUpCollision()
         asteroidManager?.updateEnemies()
         asteroidManager?.checkBulletEnemyCollision()
+        if (player != null && asteroidManager != null) {
+            asteroidManager!!.checkPlayerAsteroidCollision(player!!)
+            asteroidManager!!.checkPlayerEnemyCollision(player!!)
+            if (player!!.health <= 0) {
+                dead = true
+            }
+        }
+
     }
 
     private fun handleTouchEvent(event: MotionEvent) {

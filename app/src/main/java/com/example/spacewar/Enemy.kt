@@ -9,9 +9,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
 
-class EnemyManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
+class EnemyManager(private val context: Context, private val width: Int, private val height: Int) {
     val enemies = mutableListOf<Enemy>()
     var waveInProgress = false
+
 
     fun createEnemy(enemyType: Int): Enemy {
         val enemyResourceId = when (enemyType) {
