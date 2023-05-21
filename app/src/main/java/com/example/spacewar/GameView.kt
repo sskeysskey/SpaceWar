@@ -81,10 +81,9 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private fun update() {
         (context as Activity).runOnUiThread {
-            invalidate() // 请求重绘视图
+            invalidate()
         }
 
-        // 更新背景位置
         backgroundY += backgroundSpeed
         if (backgroundY >= height) {
             backgroundY = 0f

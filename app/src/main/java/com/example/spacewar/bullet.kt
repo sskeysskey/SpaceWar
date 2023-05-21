@@ -85,8 +85,6 @@ class BulletManager(context: Context, private val gameView: GameView) {
                                 bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
                                 bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
                             }
-
-
                             4 -> {
                                 // 创建向左和向右的子弹，它们的x轴速度为负值和正值，间隔更大
                                 val leftBulletX1 = it.x + it.bitmap.width * 0.5f - bulletBitmap.width - 3 * bulletBitmap.width
@@ -106,9 +104,6 @@ class BulletManager(context: Context, private val gameView: GameView) {
                                 bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
                                 bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
                             }
-
-
-
                             else -> {
                                 // 如果火力等级大于 3，打印一个错误消息
                                 println("Invalid powerUpLevel: ${it.powerUpLevel}")
