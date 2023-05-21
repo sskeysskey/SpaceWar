@@ -117,7 +117,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         val asteroidHealth = mapOf(
             R.drawable.asteroid1 to 3,
             R.drawable.asteroid2 to 5,
-            R.drawable.asteroid3 to 9
+            R.drawable.asteroid3 to 7
         )
 
         val randomIndex = asteroidBitmaps.indices.random()

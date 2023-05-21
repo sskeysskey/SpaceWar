@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
+import android.media.SoundPool
 import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
@@ -31,6 +32,9 @@ class BulletManager(context: Context, private val gameView: GameView) {
     val bullets = mutableListOf<Bullet>()
     private val bulletTimer = Timer()
 
+    private val soundPool = SoundPool.Builder().setMaxStreams(5).build()
+    private val shootSoundId: Int
+
     private val bulletBitmap: Bitmap = run {
         val originalBulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bullet) as BitmapDrawable).bitmap
         val scaleFactor = 0.3f // 子弹的尺寸和大小
@@ -40,9 +44,9 @@ class BulletManager(context: Context, private val gameView: GameView) {
     }
 
     init {
+        shootSoundId = soundPool.load(context, R.raw.playershoot, 1)
         bulletTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                // 发射新的子弹
                 gameView.player?.let {
                     val bulletY = it.y - bulletBitmap.height
                     synchronized(bullets) {
@@ -110,6 +114,7 @@ class BulletManager(context: Context, private val gameView: GameView) {
                             }
                         }
                     }
+                    soundPool.play(shootSoundId, 0.5f, 0.5f, 0, 0, 1f)
                 }
             }
         }, 0, 200) // 每 多少 毫秒创建一颗子弹
@@ -140,5 +145,6 @@ class BulletManager(context: Context, private val gameView: GameView) {
         synchronized(bullets) {
             bullets.clear()
         }
+        soundPool.release()
     }
 }

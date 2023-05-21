@@ -22,11 +22,11 @@ class EnemyManager(private val context: Context, private val width: Int, private
             else -> R.drawable.enemy1
         }
         val enemyHealth = when (enemyType) {
-            1 -> 10
-            2 -> 11
-            3 -> 12
-            4 -> 13
-            else -> 13
+            1 -> 8
+            2 -> 9
+            3 -> 10
+            4 -> 10
+            else -> 10
         }
         val enemyBitmap = (AppCompatResources.getDrawable(context, enemyResourceId) as BitmapDrawable).bitmap
         val x = when (enemyType) {
