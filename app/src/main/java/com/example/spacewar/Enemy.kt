@@ -13,7 +13,6 @@ class EnemyManager(private val context: Context, private val width: Int, private
     val enemies = mutableListOf<Enemy>()
     var waveInProgress = false
 
-
     fun createEnemy(enemyType: Int): Enemy {
         val enemyResourceId = when (enemyType) {
             1 -> R.drawable.enemy1

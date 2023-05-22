@@ -9,6 +9,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var gameView: GameView
     private lateinit var soundPool: SoundPool
     private var backgroundMusic: Int = 0
+    private var shootSoundId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,17 +23,23 @@ class MainActivity : AppCompatActivity() {
 
         soundPool = SoundPool.Builder()
             .setAudioAttributes(audioAttributes)
-            .setMaxStreams(1)
+            .setMaxStreams(2)
             .build()
 
         backgroundMusic = soundPool.load(this, R.raw.background, 1)
+        shootSoundId = soundPool.load(this, R.raw.playershoot, 1)
     }
 
     override fun onResume() {
         super.onResume()
         gameView.requestFocus()
-        soundPool.setOnLoadCompleteListener { _, _, _ ->
-            soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
+
+        soundPool.setOnLoadCompleteListener { soundPool, sampleId, _ ->
+            if (sampleId == backgroundMusic) {
+                soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
+            } else if (sampleId == shootSoundId) {
+                soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
+            }
         }
     }
 

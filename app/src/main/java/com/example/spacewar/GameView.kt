@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -113,7 +114,6 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
                 dead = true
             }
         }
-
     }
 
     private fun handleTouchEvent(event: MotionEvent) {
@@ -141,5 +141,15 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         running = false
         updateThread?.interrupt()
         bulletManager.stop() // 在这里调用 BulletManager 的 stop 方法
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_W -> player?.update(0f, -1f)
+            KeyEvent.KEYCODE_S -> player?.update(0f, 1f)
+            KeyEvent.KEYCODE_A -> player?.update(-1f, 0f)
+            KeyEvent.KEYCODE_D -> player?.update(1f, 0f)
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }
