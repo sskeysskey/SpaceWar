@@ -10,6 +10,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var soundPool: SoundPool
     private var backgroundMusic: Int = 0
     private var shootSoundId: Int = 0
+    private var isLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,18 +29,24 @@ class MainActivity : AppCompatActivity() {
 
         backgroundMusic = soundPool.load(this, R.raw.background, 1)
         shootSoundId = soundPool.load(this, R.raw.playershoot, 1)
+
+        soundPool.setOnLoadCompleteListener { soundPool, sampleId, _ ->
+            isLoaded = true
+            if (sampleId == backgroundMusic) {
+                soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
+            } else if (sampleId == shootSoundId) {
+                soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         gameView.requestFocus()
 
-        soundPool.setOnLoadCompleteListener { soundPool, sampleId, _ ->
-            if (sampleId == backgroundMusic) {
-                soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
-            } else if (sampleId == shootSoundId) {
-                soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
-            }
+        if (isLoaded) {
+            soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
+            soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
         }
     }
 
