@@ -23,12 +23,13 @@ class Player(
     private val height = normalBitmap.height
 
     private val healthUnit: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.healthbar) as BitmapDrawable).bitmap
+    private val lifeLogo: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.lifelogo) as BitmapDrawable).bitmap
+
     var health: Int = 7
-    private val healthBarX: Int = 50
+    private val healthBarSpacing: Int = 10
+    private val healthBarX: Int = healthBarSpacing + lifeLogo.width + healthBarSpacing
     private val healthBarY: Int = 50
     var isInvincible = false
-
-    private val healthBarSpacing: Int = 10
 
     private var isHit = false
     private var hitStartTime: Long = 0
@@ -52,7 +53,6 @@ class Player(
             isInvincible = false
         }
     }
-
 
     fun update(dx: Float, dy: Float) {
         x += dx * speed
@@ -81,10 +81,16 @@ class Player(
             canvas.drawBitmap(normalBitmap, x, y, null)
         }
 
+        // Draw Life logo to the left of the health bar
+        val lifeLogoX = healthBarX - lifeLogo.width - healthBarSpacing
+        val lifeLogoY = healthBarY + (healthUnit.height - lifeLogo.height) / 2  // centered vertically with the health bar
+        canvas.drawBitmap(lifeLogo, lifeLogoX.toFloat(), lifeLogoY.toFloat(), null)
+
         // Draw HealthBar with spacing between units
         for (i in 0 until health) {
             val dst = Rect(healthBarX + i * (healthUnit.width + healthBarSpacing), healthBarY, healthBarX + i * (healthUnit.width + healthBarSpacing) + healthUnit.width, healthBarY + healthUnit.height)
             canvas.drawBitmap(healthUnit, null, dst, null)
         }
     }
+
 }

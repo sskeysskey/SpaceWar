@@ -12,6 +12,19 @@ import java.util.TimerTask
 import android.graphics.Paint
 import android.graphics.Color
 
+class Explosion(private val bitmap: Bitmap, private var x: Float, private var y: Float) {
+    private var visibleDuration = 0
+    val isVisible: Boolean
+        get() = visibleDuration < 5
+
+    fun draw(canvas: Canvas) {
+        if (isVisible) {
+            canvas.drawBitmap(bitmap, x, y, null)
+            visibleDuration++
+        }
+    }
+}
+
 class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var health: Int) {
     private val speed = 5f
     private val width = bitmap.width
@@ -56,6 +69,8 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var totalAsteroidsCreated = 0
     private val enemyManager = EnemyManager(context, width, height)
     private var asteroidsNeededForPowerUp = 5
+    private val explosions = mutableListOf<Explosion>()
+
 
     fun checkPlayerAsteroidCollision(player: Player) {
         if (player.isInvincible) return
@@ -195,6 +210,11 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                 }
             }
         }
+
+        // 删除已经不再可见的爆炸效果
+        synchronized(explosions) {
+            explosions.removeAll { !it.isVisible }
+        }
     }
 
     fun checkBulletAsteroidCollision(){
@@ -211,6 +231,11 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                             if (asteroid.health <= 0) {
                                 asteroidsToRemove.add(asteroid)
                                 asteroidsDestroyed += 1
+
+                                // 在这里创建新的爆炸效果
+                                val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
+                                val explosion = Explosion(explosionBitmap, asteroid.x, asteroid.y)
+                                explosions.add(explosion)
 
                                 if (asteroidsDestroyed == asteroidsNeededForPowerUp) {
                                     // 创建道具
@@ -230,11 +255,18 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         }
     }
 
+
     fun drawAsteroids(canvas: Canvas) {
         synchronized(asteroids) {
             asteroids.forEach { asteroid -> asteroid.draw(canvas) }
         }
+
+        // 在陨石位置绘制爆炸效果
+        synchronized(explosions) {
+            explosions.forEach { it.draw(canvas) }
+        }
     }
+
 
     init {
         val asteroidTimer = Timer()
