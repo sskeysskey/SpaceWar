@@ -62,7 +62,7 @@ class Asteroid(private val bitmap: Bitmap, var x: Float, var y: Float, var healt
     }
 }
 
-class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<Bullet>) {
+class AsteroidManager(private val context: Context, private val width: Int, private val height: Int, private val bullets: MutableList<PlayerBullet>) {
     private val asteroids = mutableListOf<Asteroid>()
     var powerUp: PowerUp? = null
     private var asteroidsDestroyed = 0
@@ -71,6 +71,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var asteroidsNeededForPowerUp = 5
     private val explosions = mutableListOf<Explosion>()
     private val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
+    private val enemyBullets = mutableListOf<EnemyBullet>()
 
     fun checkPlayerAsteroidCollision(player: Player) {
         if (player.isInvincible) return
@@ -106,6 +107,71 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         }
     }
 
+    fun checkBulletAsteroidCollision(){
+        synchronized(bullets) {
+            synchronized(asteroids) {
+                val bulletsToRemove = mutableListOf<PlayerBullet>()
+                val asteroidsToRemove = mutableListOf<Asteroid>()
+
+                for (bullet in bullets) {
+                    for (asteroid in asteroids) {
+                        if (RectF.intersects(bullet.boundingBox, asteroid.boundingBox)) {
+                            bulletsToRemove.add(bullet)
+                            asteroid.health -= 1
+                            if (asteroid.health <= 0) {
+                                asteroidsToRemove.add(asteroid)
+                                asteroidsDestroyed += 1
+
+                                val explosion = Explosion(explosionBitmap, asteroid.x, asteroid.y)
+                                explosions.add(explosion)
+
+                                if (asteroidsDestroyed == asteroidsNeededForPowerUp) {
+                                    createPowerUp(asteroid.x, asteroid.y)
+                                    // 清零摧毁的陨石数量并增加下一次需要的陨石数量
+                                    asteroidsDestroyed = 0
+                                    asteroidsNeededForPowerUp += 5
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+                bullets.removeAll(bulletsToRemove)
+                asteroids.removeAll(asteroidsToRemove)
+            }
+        }
+    }
+
+    fun checkBulletEnemyCollision() {
+        synchronized(bullets) {
+            synchronized(enemyManager.enemies) {
+                val bulletsToRemove = mutableListOf<PlayerBullet>()
+                val enemiesToRemove = mutableListOf<Enemy>()
+
+                for (bullet in bullets) {
+                    for (enemy in enemyManager.enemies) {
+                        if (RectF.intersects(bullet.boundingBox, enemy.boundingBox)) {
+                            // 子弹和敌机碰撞
+                            bulletsToRemove.add(bullet)
+                            enemy.health -= 1
+                            if (enemy.health <= 0) {
+                                enemiesToRemove.add(enemy)
+                                val explosion = Explosion(explosionBitmap, enemy.x, enemy.y)
+                                explosions.add(explosion)
+                                // 加入这行代码来获取敌机的所有子弹
+                                enemyBullets.addAll(enemy.getBullets())
+
+                            }
+                            break
+                        }
+                    }
+                }
+                bullets.removeAll(bulletsToRemove)
+                enemyManager.enemies.removeAll(enemiesToRemove)
+            }
+        }
+    }
+
     fun updateEnemies(player: Player) {
         synchronized(enemyManager.enemies) {
             val iterator = enemyManager.enemies.iterator()
@@ -130,36 +196,25 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         synchronized(enemyManager.enemies) {
             enemyManager.enemies.forEach { enemy ->
                 enemy.draw(canvas)
-                enemy.bullets.forEach { it.draw(canvas) }  // 对每个敌人的每个子弹调用draw方法
+                enemy.enemybullets.forEach { it.draw(canvas) }  // 对每个敌人的每个子弹调用draw方法
             }
         }
     }
 
-    fun checkBulletEnemyCollision() {
-        synchronized(bullets) {
-            synchronized(enemyManager.enemies) {
-                val bulletsToRemove = mutableListOf<Bullet>()
-                val enemiesToRemove = mutableListOf<Enemy>()
-
-                for (bullet in bullets) {
-                    for (enemy in enemyManager.enemies) {
-                        if (RectF.intersects(bullet.boundingBox, enemy.boundingBox)) {
-                            // 子弹和敌机碰撞
-                            bulletsToRemove.add(bullet)
-                            enemy.health -= 1
-                            if (enemy.health <= 0) {
-                                enemiesToRemove.add(enemy)
-                                val explosion = Explosion(explosionBitmap, enemy.x, enemy.y)
-                                explosions.add(explosion)
-                            }
-                            break
-                        }
-                    }
-                }
-                bullets.removeAll(bulletsToRemove)
-                enemyManager.enemies.removeAll(enemiesToRemove)
+    fun updateEnemyBullets() {
+        val iterator = enemyBullets.iterator()
+        while (iterator.hasNext()) {
+            val bullet = iterator.next()
+            bullet.update()
+            // 如果子弹飞出屏幕，从列表中移除
+            if (bullet.y > height || bullet.x > width || bullet.x + bullet.bitmap.width < 0 || bullet.y + bullet.bitmap.height < 0) {
+                iterator.remove()
             }
         }
+    }
+
+    fun drawEnemyBullets(canvas: Canvas) {
+        enemyBullets.forEach { it.draw(canvas) }
     }
 
     private fun createPowerUp(x: Float, y: Float) {
@@ -215,51 +270,11 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                 }
             }
         }
-
         // 删除已经不再可见的爆炸效果
         synchronized(explosions) {
             explosions.removeAll { !it.isVisible }
         }
     }
-
-    fun checkBulletAsteroidCollision(){
-        synchronized(bullets) {
-            synchronized(asteroids) {
-                val bulletsToRemove = mutableListOf<Bullet>()
-                val asteroidsToRemove = mutableListOf<Asteroid>()
-
-                for (bullet in bullets) {
-                    for (asteroid in asteroids) {
-                        if (RectF.intersects(bullet.boundingBox, asteroid.boundingBox)) {
-                            bulletsToRemove.add(bullet)
-                            asteroid.health -= 1
-                            if (asteroid.health <= 0) {
-                                asteroidsToRemove.add(asteroid)
-                                asteroidsDestroyed += 1
-
-                                // 在这里创建新的爆炸效果
-
-                                val explosion = Explosion(explosionBitmap, asteroid.x, asteroid.y)
-                                explosions.add(explosion)
-
-                                if (asteroidsDestroyed == asteroidsNeededForPowerUp) {
-                                    // 创建道具
-                                    createPowerUp(asteroid.x, asteroid.y)
-                                    // 清零摧毁的陨石数量并增加下一次需要的陨石数量
-                                    asteroidsDestroyed = 0
-                                    asteroidsNeededForPowerUp += 5
-                                }
-                            }
-                            break
-                        }
-                    }
-                }
-                bullets.removeAll(bulletsToRemove)
-                asteroids.removeAll(asteroidsToRemove)
-            }
-        }
-    }
-
 
     fun drawAsteroids(canvas: Canvas) {
         synchronized(asteroids) {

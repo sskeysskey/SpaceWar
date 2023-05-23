@@ -86,5 +86,4 @@ class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private va
             canvas.drawBitmap(healthUnit, null, dst, null)
         }
     }
-
 }

@@ -81,6 +81,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         asteroidManager?.drawAsteroids(canvas)
         asteroidManager?.powerUp?.draw(canvas)
         asteroidManager?.drawEnemies(canvas)
+        asteroidManager?.drawEnemyBullets(canvas)
+
         if (dead) {
             // 显示死亡图片
             canvas.drawBitmap(deathImage, (width - deathImage.width) / 2f, (height - deathImage.height) / 2f, null)
@@ -115,6 +117,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
                 dead = true
             }
         }
+        asteroidManager?.updateEnemyBullets()
     }
 
     private fun handleTouchEvent(event: MotionEvent) {

@@ -66,7 +66,11 @@ class EnemyManager(private val context: Context, private val width: Int, private
 class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var y: Float, var health: Int, private val type: Int) {
     private val speed = 4
     private val horizontalSpeed = 2
-    val bullets = mutableListOf<EnemyBullet>()
+    val enemybullets = mutableListOf<EnemyBullet>()
+
+    fun getBullets(): List<EnemyBullet> {
+        return enemybullets.toList()
+    }
 
     val boundingBox: RectF
         get() = RectF(x, y, x + bitmap.width, y + bitmap.height)
@@ -91,11 +95,11 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
                 y += speed
             }
         }
-        bullets.forEach { it.update() }
+        enemybullets.forEach { it.update() }
 
         // 敌机有一定的几率发射新的子弹
         if (Random.nextInt(100) < 1) {
-            bullets.add(createEnemyBullet(playerX, playerY))
+            enemybullets.add(createEnemyBullet(playerX, playerY))
         }
     }
 
@@ -111,11 +115,11 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
 
     fun draw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, x, y, null)
-        bullets.forEach { it.draw(canvas) }
+        enemybullets.forEach { it.draw(canvas) }
     }
 }
 
-class EnemyBullet(private val bitmap: Bitmap, private var x: Float, private var y: Float, targetX: Float, targetY: Float) {
+class EnemyBullet(val bitmap: Bitmap, var x: Float, var y: Float, targetX: Float, targetY: Float) {
     private val speed = 6
     private var deltaX = 0f
     private var deltaY = 0f

@@ -9,7 +9,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
 
-class Bullet(val bitmap: Bitmap, private var x: Float, var y: Float, private val speedX: Float = 0f) {
+class PlayerBullet(val bitmap: Bitmap, private var x: Float, var y: Float, private val speedX: Float = 0f) {
     private val speedY = 20f // 子弹发射的速度
     private val width = bitmap.width
     private val height = bitmap.height
@@ -28,7 +28,7 @@ class Bullet(val bitmap: Bitmap, private var x: Float, var y: Float, private val
 }
 
 class BulletManager(context: Context, private val gameView: GameView) {
-    val bullets = mutableListOf<Bullet>()
+    val bullets = mutableListOf<PlayerBullet>()
     private val bulletTimer = Timer()
 
     private val bulletBitmap: Bitmap = run {
@@ -49,59 +49,59 @@ class BulletManager(context: Context, private val gameView: GameView) {
                             0 -> {
                                 // 如果火力等级为 0，只发射一颗子弹
                                 val bulletX = it.x + it.normalBitmap.width / 2f - bulletBitmap.width / 2f
-                                val bullet = Bullet(bulletBitmap, bulletX, bulletY)
+                                val bullet = PlayerBullet(bulletBitmap, bulletX, bulletY)
                                 bullets.add(bullet)
                             }
                             1 -> {
                                 // 如果火力等级为 1，发射两颗子弹
                                 val bulletX1 = it.x + it.normalBitmap.width * 0.25f - bulletBitmap.width / 2f
                                 val bulletX2 = it.x + it.normalBitmap.width * 0.75f - bulletBitmap.width / 2f
-                                val bullet1 = Bullet(bulletBitmap, bulletX1, bulletY)
-                                val bullet2 = Bullet(bulletBitmap, bulletX2, bulletY)
+                                val bullet1 = PlayerBullet(bulletBitmap, bulletX1, bulletY)
+                                val bullet2 = PlayerBullet(bulletBitmap, bulletX2, bulletY)
                                 bullets.add(bullet1)
                                 bullets.add(bullet2)
                             }
                             2 -> {
                                 // 创建中间的子弹
                                 val middleBulletX = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width / 2f
-                                bullets.add(Bullet(bulletBitmap, middleBulletX, bulletY))
+                                bullets.add(PlayerBullet(bulletBitmap, middleBulletX, bulletY))
 
                                 // 创建向左和向右的子弹，它们的x轴速度为负值和正值
                                 val leftBulletX = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width
                                 val rightBulletX = it.x + it.normalBitmap.width * 0.5f
-                                bullets.add(Bullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
-                                bullets.add(Bullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
+                                bullets.add(PlayerBullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
+                                bullets.add(PlayerBullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
                             }
                             3 -> {
                                 val leftBulletX = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width
                                 val rightBulletX = it.x + it.normalBitmap.width * 0.5f
-                                bullets.add(Bullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
-                                bullets.add(Bullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
+                                bullets.add(PlayerBullet(bulletBitmap, leftBulletX, bulletY, speedX = -5f))
+                                bullets.add(PlayerBullet(bulletBitmap, rightBulletX, bulletY, speedX = 5f))
 
                                 // 在中间位置创建两颗子弹，间隔更大
                                 val middleBulletX1 = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
                                 val middleBulletX2 = it.x + it.normalBitmap.width * 0.5f + bulletBitmap.width / 2f
-                                bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
-                                bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
+                                bullets.add(PlayerBullet(bulletBitmap, middleBulletX1, bulletY))
+                                bullets.add(PlayerBullet(bulletBitmap, middleBulletX2, bulletY))
                             }
                             4 -> {
                                 // 创建向左和向右的子弹，它们的x轴速度为负值和正值，间隔更大
                                 val leftBulletX1 = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width - 3 * bulletBitmap.width
                                 val rightBulletX1 = it.x + it.normalBitmap.width * 0.5f + 3 * bulletBitmap.width
-                                bullets.add(Bullet(bulletBitmap, leftBulletX1, bulletY, speedX = -5f))
-                                bullets.add(Bullet(bulletBitmap, rightBulletX1, bulletY, speedX = 5f))
+                                bullets.add(PlayerBullet(bulletBitmap, leftBulletX1, bulletY, speedX = -5f))
+                                bullets.add(PlayerBullet(bulletBitmap, rightBulletX1, bulletY, speedX = 5f))
 
                                 // 在左右两侧各再增加一颗子弹，间隔更大
                                 val leftBulletX2 = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
                                 val rightBulletX2 = it.x + it.normalBitmap.width * 0.5f + bulletBitmap.width + 4 * bulletBitmap.width
-                                bullets.add(Bullet(bulletBitmap, leftBulletX2, bulletY, speedX = -5f))
-                                bullets.add(Bullet(bulletBitmap, rightBulletX2, bulletY, speedX = 5f))
+                                bullets.add(PlayerBullet(bulletBitmap, leftBulletX2, bulletY, speedX = -5f))
+                                bullets.add(PlayerBullet(bulletBitmap, rightBulletX2, bulletY, speedX = 5f))
 
                                 // 在中间位置创建两颗子弹，间隔更大
                                 val middleBulletX1 = it.x + it.normalBitmap.width * 0.5f - bulletBitmap.width - bulletBitmap.width / 2f
                                 val middleBulletX2 = it.x + it.normalBitmap.width * 0.5f + bulletBitmap.width / 2f
-                                bullets.add(Bullet(bulletBitmap, middleBulletX1, bulletY))
-                                bullets.add(Bullet(bulletBitmap, middleBulletX2, bulletY))
+                                bullets.add(PlayerBullet(bulletBitmap, middleBulletX1, bulletY))
+                                bullets.add(PlayerBullet(bulletBitmap, middleBulletX2, bulletY))
                             }
                             else -> {
                                 // 如果火力等级大于 3，打印一个错误消息
