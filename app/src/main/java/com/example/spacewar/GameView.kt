@@ -105,12 +105,13 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
         asteroidManager?.powerUp?.update()
         checkPlayerPowerUpCollision()
-        asteroidManager?.updateEnemies()
-        asteroidManager?.checkBulletEnemyCollision()
-        if (player != null && asteroidManager != null) {
-            asteroidManager!!.checkPlayerAsteroidCollision(player!!)
-            asteroidManager!!.checkPlayerEnemyCollision(player!!)
-            if (player!!.health <= 0) {
+
+        player?.let {
+            asteroidManager?.updateEnemies(it)
+            asteroidManager?.checkBulletEnemyCollision()
+            asteroidManager?.checkPlayerAsteroidCollision(it)
+            asteroidManager?.checkPlayerEnemyCollision(it)
+            if (it.health <= 0) {
                 dead = true
             }
         }

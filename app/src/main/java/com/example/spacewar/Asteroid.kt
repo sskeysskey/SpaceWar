@@ -106,13 +106,13 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         }
     }
 
-
-    fun updateEnemies() {
+    fun updateEnemies(player: Player) {
         synchronized(enemyManager.enemies) {
             val iterator = enemyManager.enemies.iterator()
             while (iterator.hasNext()) {
                 val enemy = iterator.next()
-                enemy.update()
+                // 更新敌人和敌人的子弹
+                enemy.update(player.x, player.y)
                 // 如果敌机飞出屏幕，从列表中移除
                 if (enemy.y > height || enemy.x > width || enemy.x + enemy.bitmap.width < 0) {
                     iterator.remove()
@@ -128,7 +128,10 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
 
     fun drawEnemies(canvas: Canvas) {
         synchronized(enemyManager.enemies) {
-            enemyManager.enemies.forEach { enemy -> enemy.draw(canvas) }
+            enemyManager.enemies.forEach { enemy ->
+                enemy.draw(canvas)
+                enemy.bullets.forEach { it.draw(canvas) }  // 对每个敌人的每个子弹调用draw方法
+            }
         }
     }
 

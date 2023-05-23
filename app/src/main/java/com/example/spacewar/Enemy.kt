@@ -6,6 +6,8 @@ import android.graphics.RectF
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import kotlin.math.sqrt
+import kotlin.random.Random
 import java.util.Timer
 import java.util.TimerTask
 
@@ -40,7 +42,7 @@ class EnemyManager(private val context: Context, private val width: Int, private
             5 -> -enemyBitmap.height.toFloat()
             else -> -enemyBitmap.height.toFloat()
         }
-        return Enemy(enemyBitmap, x, y, enemyHealth, enemyType)
+        return Enemy(context, enemyBitmap, x, y, enemyHealth, enemyType)
     }
 
     fun launchEnemyWave() {
@@ -61,20 +63,15 @@ class EnemyManager(private val context: Context, private val width: Int, private
     }
 }
 
-class Enemy(
-    val bitmap: Bitmap,
-    var x: Float,
-    var y: Float,
-    var health: Int,
-    private val type: Int
-) {
+class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var y: Float, var health: Int, private val type: Int) {
     private val speed = 4
     private val horizontalSpeed = 2
+    val bullets = mutableListOf<EnemyBullet>()
 
     val boundingBox: RectF
         get() = RectF(x, y, x + bitmap.width, y + bitmap.height)
 
-    fun update() {
+    fun update(playerX: Float, playerY: Float) {
         when (type) {
             1 -> y += speed
             2 -> {
@@ -94,6 +91,48 @@ class Enemy(
                 y += speed
             }
         }
+        bullets.forEach { it.update() }
+
+        // 敌机有一定的几率发射新的子弹
+        if (Random.nextInt(100) < 5) {
+            bullets.add(createEnemyBullet(playerX, playerY))
+        }
+    }
+
+    // 创建新的子弹
+    private fun createEnemyBullet(playerX: Float, playerY: Float): EnemyBullet {
+        val bulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletenemy) as BitmapDrawable).bitmap
+        val bulletX = x + bitmap.width / 2f - bulletBitmap.width / 2f
+        val bulletY = y + bitmap.height
+        return EnemyBullet(bulletBitmap, bulletX, bulletY, playerX, playerY)
+    }
+
+    fun draw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, x, y, null)
+        bullets.forEach { it.draw(canvas) }
+    }
+}
+
+class EnemyBullet(private val bitmap: Bitmap, private var x: Float, private var y: Float, targetX: Float, targetY: Float) {
+    private val speed = 6
+    private var deltaX = 0f
+    private var deltaY = 0f
+
+    val boundingBox: RectF
+        get() = RectF(x, y, x + bitmap.width, y + bitmap.height)
+
+    init {
+        val diffX = targetX - x
+        val diffY = targetY - y
+        val length = sqrt(diffX * diffX + diffY * diffY)
+
+        deltaX = diffX / length * speed
+        deltaY = diffY / length * speed
+    }
+
+    fun update() {
+        x += deltaX
+        y += deltaY
     }
 
     fun draw(canvas: Canvas) {

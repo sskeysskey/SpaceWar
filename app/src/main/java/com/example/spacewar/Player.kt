@@ -6,13 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
 import kotlin.math.sin
 
-class Player(
-    val normalBitmap: Bitmap,
-    private val hitBitmap: Bitmap,
-    private val screenWidth: Int,
-    private val screenHeight: Int,
-    context: Context
-) {
+class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private val screenWidth: Int, private val screenHeight: Int, context: Context) {
     internal var x: Float = (screenWidth - normalBitmap.width) / 2f
     internal var y: Float = screenHeight * 5 / 6f - normalBitmap.height / 2f
 

@@ -33,7 +33,7 @@ class BulletManager(context: Context, private val gameView: GameView) {
 
     private val bulletBitmap: Bitmap = run {
         val originalBulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletplayer) as BitmapDrawable).bitmap
-        val scaleFactor = 0.3f // 子弹的尺寸和大小
+        val scaleFactor = 0.5f // 子弹的尺寸和大小
         val newWidth = (originalBulletBitmap.width * scaleFactor).toInt()
         val newHeight = (originalBulletBitmap.height * scaleFactor).toInt()
         Bitmap.createScaledBitmap(originalBulletBitmap, newWidth, newHeight, false)
