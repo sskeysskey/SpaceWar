@@ -70,7 +70,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private val enemyManager = EnemyManager(context, width, height)
     private var asteroidsNeededForPowerUp = 5
     private val explosions = mutableListOf<Explosion>()
-
+    private val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
 
     fun checkPlayerAsteroidCollision(player: Player) {
         if (player.isInvincible) return
@@ -146,6 +146,8 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                             enemy.health -= 1
                             if (enemy.health <= 0) {
                                 enemiesToRemove.add(enemy)
+                                val explosion = Explosion(explosionBitmap, enemy.x, enemy.y)
+                                explosions.add(explosion)
                             }
                             break
                         }
@@ -233,7 +235,7 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                                 asteroidsDestroyed += 1
 
                                 // 在这里创建新的爆炸效果
-                                val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
+
                                 val explosion = Explosion(explosionBitmap, asteroid.x, asteroid.y)
                                 explosions.add(explosion)
 
