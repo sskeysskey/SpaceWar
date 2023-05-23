@@ -101,7 +101,9 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
 
     // 创建新的子弹
     private fun createEnemyBullet(playerX: Float, playerY: Float): EnemyBullet {
-        val bulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletenemy) as BitmapDrawable).bitmap
+        var bulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletenemy) as BitmapDrawable).bitmap
+        bulletBitmap = Bitmap.createScaledBitmap(bulletBitmap, bulletBitmap.width / 2, bulletBitmap.height / 2, true)
+
         val bulletX = x + bitmap.width / 2f - bulletBitmap.width / 2f
         val bulletY = y + bitmap.height
         return EnemyBullet(bulletBitmap, bulletX, bulletY, playerX, playerY)
