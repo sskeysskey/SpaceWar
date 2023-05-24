@@ -81,7 +81,7 @@ class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private va
         canvas.drawBitmap(lifeLogo, lifeLogoX.toFloat(), lifeLogoY.toFloat(), null)
 
         // Draw HealthBar with spacing between units
-        for (i in 0 until health) {
+        for (i in 0 until health ) {
             val dst = Rect(healthBarX + i * (healthUnit.width + healthBarSpacing), healthBarY, healthBarX + i * (healthUnit.width + healthBarSpacing) + healthUnit.width, healthBarY + healthUnit.height)
             canvas.drawBitmap(healthUnit, null, dst, null)
         }

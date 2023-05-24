@@ -68,7 +68,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             player = Player(plane, planeHit, w, h, context)
         }
         if (asteroidManager == null) {
-            asteroidManager = AsteroidManager(context, w, h, bulletManager.bullets)
+            asteroidManager = AsteroidManager(context, w, h, bulletManager.playerbullets)
         }
     }
 
@@ -101,18 +101,19 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
 
         bulletManager.updateBullets()
-        synchronized(bulletManager.bullets) {
+        synchronized(bulletManager.playerbullets) {
             asteroidManager?.updateAsteroids()
-            asteroidManager?.checkBulletAsteroidCollision()
+            asteroidManager?.checkPlayerBulletAsteroidCollision()
         }
         asteroidManager?.powerUp?.update()
         checkPlayerPowerUpCollision()
 
         player?.let {
             asteroidManager?.updateEnemies(it)
-            asteroidManager?.checkBulletEnemyCollision()
+            asteroidManager?.checkPlayerBulletEnemyCollision()
             asteroidManager?.checkPlayerAsteroidCollision(it)
             asteroidManager?.checkPlayerEnemyCollision(it)
+            asteroidManager?.checkEnemyBulletPlayerCollision(it)
             if (it.health <= 0) {
                 dead = true
             }

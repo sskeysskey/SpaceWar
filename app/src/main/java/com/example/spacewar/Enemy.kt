@@ -68,7 +68,7 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
     private val horizontalSpeed = 2
     val enemybullets = mutableListOf<EnemyBullet>()
 
-    fun getBullets(): List<EnemyBullet> {
+    fun getEnemyBullets(): List<EnemyBullet> {
         return enemybullets.toList()
     }
 
@@ -98,29 +98,29 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
         enemybullets.forEach { it.update() }
 
         // 敌机有一定的几率发射新的子弹
-        if (Random.nextInt(100) < 1) {
+        if (Random.nextInt(100) < 0.5) {
             enemybullets.add(createEnemyBullet(playerX, playerY))
         }
     }
 
     // 创建新的子弹
     private fun createEnemyBullet(playerX: Float, playerY: Float): EnemyBullet {
-        var bulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletenemy) as BitmapDrawable).bitmap
-        bulletBitmap = Bitmap.createScaledBitmap(bulletBitmap, bulletBitmap.width / 2, bulletBitmap.height / 2, true)
+        var enemybulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletenemy) as BitmapDrawable).bitmap
+        enemybulletBitmap = Bitmap.createScaledBitmap(enemybulletBitmap, enemybulletBitmap.width / 2, enemybulletBitmap.height / 2, true)
 
-        val bulletX = x + bitmap.width / 2f - bulletBitmap.width / 2f
-        val bulletY = y + bitmap.height
-        return EnemyBullet(bulletBitmap, bulletX, bulletY, playerX, playerY)
+        val enemybulletX = x + bitmap.width / 2f - enemybulletBitmap.width / 2f
+        val enemybulletY = y + bitmap.height
+        return EnemyBullet(enemybulletBitmap, enemybulletX, enemybulletY, playerX, playerY)
     }
 
-    fun draw(canvas: Canvas) {
+    fun drawEnemyBullet(canvas: Canvas) {
         canvas.drawBitmap(bitmap, x, y, null)
         enemybullets.forEach { it.draw(canvas) }
     }
 }
 
 class EnemyBullet(val bitmap: Bitmap, var x: Float, var y: Float, targetX: Float, targetY: Float) {
-    private val speed = 6
+    private val speed = 6f
     private var deltaX = 0f
     private var deltaY = 0f
 
