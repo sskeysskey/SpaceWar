@@ -98,7 +98,7 @@ class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var 
         enemybullets.forEach { it.update() }
 
         // 敌机有一定的几率发射新的子弹
-        if (Random.nextInt(100) < 0.5) {
+        if (Random.nextInt(100) < 0.005) {
             enemybullets.add(createEnemyBullet(playerX, playerY))
         }
     }
