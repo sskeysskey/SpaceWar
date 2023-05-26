@@ -156,8 +156,8 @@ class BulletManager(context: Context, private val gameView: GameView) {
                                 playerbullets.add(PlayerBullet(playerbulletBitmap, rightBulletX3, bulletY, speedX = 5f))
 
                                 // Creating additional left and right bullets
-                                val leftBulletX4 = it.x + it.normalBitmap.width * 0.5f - playerbulletBitmap.width -  10 * playerbulletBitmap.width
-                                val rightBulletX4 = it.x + it.normalBitmap.width * 0.5f + 12 * playerbulletBitmap.width
+                                val leftBulletX4 = it.x + it.normalBitmap.width * 0.5f - playerbulletBitmap.width -  11 * playerbulletBitmap.width
+                                val rightBulletX4 = it.x + it.normalBitmap.width * 0.5f + 13 * playerbulletBitmap.width
                                 playerbullets.add(PlayerBullet(playerbulletBitmap, leftBulletX4, bulletY, speedX = -5f))
                                 playerbullets.add(PlayerBullet(playerbulletBitmap, rightBulletX4, bulletY, speedX = 5f))
                             }
