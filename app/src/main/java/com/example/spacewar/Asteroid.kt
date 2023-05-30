@@ -72,6 +72,78 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private val explosions = mutableListOf<Explosion>()
     private val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
     private val enemyBullets = mutableListOf<EnemyBullet>()
+    private var boss1: Boss? = null
+    private var boss2: Boss? = null
+    private var isBossCreated = false
+
+    private fun createBoss() {
+        val bossBitmap1 = (AppCompatResources.getDrawable(context, R.drawable.boss1) as BitmapDrawable).bitmap
+        val bossBitmap2 = (AppCompatResources.getDrawable(context, R.drawable.boss2) as BitmapDrawable).bitmap
+
+        if (boss1 == null && totalAsteroidsCreated == 40) {
+            boss1 = Boss(context, bossBitmap1, width.toFloat() / 2, 0f, width, 200)
+            isBossCreated = true
+        } else if (boss2 == null && totalAsteroidsCreated == 80) {
+            boss2 = Boss(context, bossBitmap2, width.toFloat() / 2, 0f, width, 500)
+            isBossCreated = true
+        }
+    }
+
+    fun updateBoss() {
+        // Update boss when it exists
+        boss1?.update()
+        boss2?.update()
+    }
+
+    fun drawBoss(canvas: Canvas) {
+        // Draw boss when it exists
+        boss1?.let { boss ->
+            boss.draw(canvas)
+            boss.drawHealth(canvas) // 在Boss上显示
+        }
+
+        boss2?.let { boss ->
+            boss.draw(canvas)
+            boss.drawHealth(canvas) // 在Boss上显示
+        }
+    }
+
+    fun checkPlayerBulletBossCollision() {
+        boss1?.let { boss ->
+            synchronized(playerbullets) {
+                val playerbulletsToRemove = mutableListOf<PlayerBullet>()
+                for (playerbullet in playerbullets) {
+                    if (RectF.intersects(playerbullet.boundingBox, boss.boundingBox)) {
+                        playerbulletsToRemove.add(playerbullet)
+                        boss.health -= 1
+                        if (boss.health <= 0) {
+                            this.boss1 = null
+                            isBossCreated = false
+                        }
+                    }
+                }
+                playerbullets.removeAll(playerbulletsToRemove)
+            }
+        }
+
+        boss2?.let { boss ->
+            synchronized(playerbullets) {
+                val playerbulletsToRemove = mutableListOf<PlayerBullet>()
+                for (playerbullet in playerbullets) {
+                    if (RectF.intersects(playerbullet.boundingBox, boss.boundingBox)) {
+                        playerbulletsToRemove.add(playerbullet)
+                        boss.health -= 1
+                        if (boss.health <= 0) {
+                            this.boss2 = null
+                            isBossCreated = false
+                        }
+                    }
+                }
+                playerbullets.removeAll(playerbulletsToRemove)
+            }
+        }
+    }
+
 
     fun checkPlayerAsteroidCollision(player: Player) {
         if (player.isInvincible) return
@@ -218,7 +290,6 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     }
 
     fun updateEnemyBullets() {
-
         synchronized(enemyBullets) {
 //            for (enemy in enemyManager.enemies) {
 //                // 获取敌人的子弹并添加到 enemyBullets 列表中
@@ -314,17 +385,39 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         }
     }
 
-
     init {
         val asteroidTimer = Timer()
         asteroidTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                val asteroid = createRandomAsteroid()
-                synchronized(asteroids) {
-                    asteroids.add(asteroid)
-                    totalAsteroidsCreated+=1
+                // Check if boss1 or boss2 is dead
+                if (boss1?.health == 0) {
+                    boss1 = null
+                    isBossCreated = false
+                }
+                if (boss2?.health == 0) {
+                    boss2 = null
+                    isBossCreated = false
+                }
+
+                // Generate asteroid only when there is no boss
+                if ((boss1 == null && boss2 == null) || !isBossCreated) {
+                    val asteroid = createRandomAsteroid()
+                    synchronized(asteroids) {
+                        asteroids.add(asteroid)
+                        totalAsteroidsCreated += 1
+                    }
+
+                    // Create boss1 when totalAsteroidsCreated equals 40
+                    if (totalAsteroidsCreated == 40) {
+                        createBoss()
+                    }
+
+                    // Create boss2 when totalAsteroidsCreated equals 80
+                    else if (totalAsteroidsCreated == 80) {
+                        createBoss()
+                    }
                 }
             }
-        }, 0, 1500) // 每 多少 毫秒生成一个陨石
+        }, 0, 1500) // 每1500毫秒生成一个陨石
     }
 }

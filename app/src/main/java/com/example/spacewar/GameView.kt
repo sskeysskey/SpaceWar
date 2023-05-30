@@ -82,6 +82,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         asteroidManager?.powerUp?.draw(canvas)
         asteroidManager?.drawEnemies(canvas)
         asteroidManager?.drawEnemyBullets(canvas)
+        asteroidManager?.drawBoss(canvas)
 
         if (dead) {
             // 显示死亡图片
@@ -101,6 +102,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
 
         bulletManager.updateBullets()
+        asteroidManager?.updateBoss()
+
         synchronized(bulletManager.playerbullets) {
             asteroidManager?.updateAsteroids()
             asteroidManager?.checkPlayerBulletAsteroidCollision()
@@ -114,6 +117,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
             asteroidManager?.checkPlayerAsteroidCollision(it)
             asteroidManager?.checkPlayerEnemyCollision(it)
             asteroidManager?.checkEnemyBulletPlayerCollision(it)
+            asteroidManager?.checkPlayerBulletBossCollision()
+
             if (it.health <= 0) {
                 dead = true
             }
