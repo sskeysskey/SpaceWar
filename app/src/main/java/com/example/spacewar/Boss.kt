@@ -7,7 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 
-class Boss(private val context: Context, private val bitmap: Bitmap, private var x: Float, private var y: Float, private val screenWidth: Int, var health: Int) {
+class Boss(private val context: Context, private val bitmap: Bitmap, var x: Float, var y: Float, private val screenWidth: Int, var health: Int) {
     private val width = bitmap.width
     private val height = bitmap.height
     private val speed = 3f

@@ -102,10 +102,10 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
 
         bulletManager.updateBullets()
-        asteroidManager?.updateBoss()
 
         synchronized(bulletManager.playerbullets) {
             asteroidManager?.updateAsteroids()
+            asteroidManager?.updateBoss()
             asteroidManager?.checkPlayerBulletAsteroidCollision()
         }
         asteroidManager?.powerUp?.update()

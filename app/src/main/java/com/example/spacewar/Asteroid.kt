@@ -71,9 +71,11 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
     private var asteroidsNeededForPowerUp = 5
     private val explosions = mutableListOf<Explosion>()
     private val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
+    private val bossexplosions = mutableListOf<Explosion>()
+    private val bossexplosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.boss_explosion) as BitmapDrawable).bitmap
     private val enemyBullets = mutableListOf<EnemyBullet>()
-    private var boss1: Boss? = null
-    private var boss2: Boss? = null
+    var boss1: Boss? = null
+    var boss2: Boss? = null
     private var isBossCreated = false
 
     private fun createBoss() {
@@ -83,28 +85,28 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
         if (boss1 == null && totalAsteroidsCreated == 40) {
             boss1 = Boss(context, bossBitmap1, width.toFloat() / 2, 0f, width, 200)
             isBossCreated = true
-        } else if (boss2 == null && totalAsteroidsCreated == 80) {
+        } else if (boss2 == null && totalAsteroidsCreated == 65) {
             boss2 = Boss(context, bossBitmap2, width.toFloat() / 2, 0f, width, 500)
             isBossCreated = true
         }
     }
 
     fun updateBoss() {
-        // Update boss when it exists
         boss1?.update()
         boss2?.update()
+        bossexplosions.removeAll { !it.isVisible }
     }
 
     fun drawBoss(canvas: Canvas) {
         // Draw boss when it exists
+        bossexplosions.forEach { it.draw(canvas) }
         boss1?.let { boss ->
             boss.draw(canvas)
-            boss.drawHealth(canvas) // 在Boss上显示
+            boss.drawHealth(canvas)
         }
-
         boss2?.let { boss ->
             boss.draw(canvas)
-            boss.drawHealth(canvas) // 在Boss上显示
+            boss.drawHealth(canvas)
         }
     }
 
@@ -119,6 +121,8 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                         if (boss.health <= 0) {
                             this.boss1 = null
                             isBossCreated = false
+                            val bossexplosion = Explosion(bossexplosionBitmap, boss.x, boss.y)
+                            bossexplosions.add(bossexplosion)
                         }
                     }
                 }
@@ -136,6 +140,8 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                         if (boss.health <= 0) {
                             this.boss2 = null
                             isBossCreated = false
+                            val bossexplosion = Explosion(bossexplosionBitmap, boss.x, boss.y)
+                            bossexplosions.add(bossexplosion)
                         }
                     }
                 }
@@ -398,7 +404,6 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                     boss2 = null
                     isBossCreated = false
                 }
-
                 // Generate asteroid only when there is no boss
                 if ((boss1 == null && boss2 == null) || !isBossCreated) {
                     val asteroid = createRandomAsteroid()
@@ -407,13 +412,11 @@ class AsteroidManager(private val context: Context, private val width: Int, priv
                         totalAsteroidsCreated += 1
                     }
 
-                    // Create boss1 when totalAsteroidsCreated equals 40
                     if (totalAsteroidsCreated == 40) {
                         createBoss()
                     }
 
-                    // Create boss2 when totalAsteroidsCreated equals 80
-                    else if (totalAsteroidsCreated == 80) {
+                    else if (totalAsteroidsCreated == 65) {
                         createBoss()
                     }
                 }
