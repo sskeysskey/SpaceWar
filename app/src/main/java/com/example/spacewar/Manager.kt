@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaPlayer
 import androidx.appcompat.content.res.AppCompatResources
 import java.util.Timer
 import java.util.TimerTask
@@ -24,16 +25,17 @@ class Manager(private val context: Context, private val width: Int, private val 
     var boss2: Boss? = null
     private var isBossCreated = false
     private var totalAsteroidsCreated = 0
+    val bossexplosionSound: MediaPlayer = MediaPlayer.create(context, R.raw.bossexplosion)
 
     private fun createBoss() {
         val bossBitmap1 = (AppCompatResources.getDrawable(context, R.drawable.boss1) as BitmapDrawable).bitmap
         val bossBitmap2 = (AppCompatResources.getDrawable(context, R.drawable.boss2) as BitmapDrawable).bitmap
 
         if (boss1 == null && totalAsteroidsCreated == 40) {
-            boss1 = Boss(context, bossBitmap1, width.toFloat() / 2, 0f, width, 300, R.drawable.bosslaser1)
+            boss1 = Boss(context, bossBitmap1, width.toFloat() / 2, 0f, width, 500, R.drawable.bosslaser1, isBoss1 = true, 3f, 6 * 60)
             isBossCreated = true
         } else if (boss2 == null && totalAsteroidsCreated == 65) {
-            boss2 = Boss(context, bossBitmap2, width.toFloat() / 2, 0f, width, 500, R.drawable.bosslaser2)
+            boss2 = Boss(context, bossBitmap2, width.toFloat() / 2, 0f, width, 1000, R.drawable.bosslaser2, isBoss1 = false, 9f, 1 * 60)
             isBossCreated = true
         }
     }
@@ -88,6 +90,7 @@ class Manager(private val context: Context, private val width: Int, private val 
                             isBossCreated = false
                             val bossexplosion = Explosion(bossexplosionBitmap, boss.x, boss.y)
                             bossexplosions.add(bossexplosion)
+                            bossexplosionSound.start()
                         }
                     }
                 }
@@ -107,6 +110,7 @@ class Manager(private val context: Context, private val width: Int, private val 
                             isBossCreated = false
                             val bossexplosion = Explosion(bossexplosionBitmap, boss.x, boss.y)
                             bossexplosions.add(bossexplosion)
+                            bossexplosionSound.start()
                         }
                     }
                 }
@@ -378,4 +382,5 @@ class Manager(private val context: Context, private val width: Int, private val 
             }
         }, 0, 1500) // 每1500毫秒生成一个陨石
     }
+
 }

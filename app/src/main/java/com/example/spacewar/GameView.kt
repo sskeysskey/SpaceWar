@@ -154,6 +154,12 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         bulletManager.stop() // 在这里调用 BulletManager 的 stop 方法
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        manager?.bossexplosionSound?.release()
+    }
+
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_W -> player?.update(0f, -1f)

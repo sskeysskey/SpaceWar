@@ -17,5 +17,22 @@ class BossLaser(private val bitmap: Bitmap, var x: Float, var y: Float, private 
     }
 }
 
+class BossBullet(private val bitmap: Bitmap, var x: Float, var y: Float, private var dx: Float, private var dy: Float) {
+    private val width = bitmap.width
+    private val height = bitmap.height
+
+    val boundingBox: RectF
+        get() = RectF(x, y, x + width, y + height)
+
+    fun draw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, x, y, null)
+    }
+
+    fun update() {
+        x += dx
+        y += dy
+    }
+}
+
 
 

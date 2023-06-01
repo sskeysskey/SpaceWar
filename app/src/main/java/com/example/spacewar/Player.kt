@@ -19,7 +19,7 @@ class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private va
     private val healthUnit: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.healthbar) as BitmapDrawable).bitmap
     private val lifeLogo: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.lifelogo) as BitmapDrawable).bitmap
 
-    var health: Int = 7
+    var health: Int = 10
     private val healthBarSpacing: Int = 10
     private val healthBarX: Int = healthBarSpacing + lifeLogo.width + healthBarSpacing
     private val healthBarY: Int = 50
