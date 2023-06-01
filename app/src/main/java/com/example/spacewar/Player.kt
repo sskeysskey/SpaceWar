@@ -27,7 +27,7 @@ class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private va
 
     private var isHit = false
     private var hitStartTime: Long = 0
-    private val hitDuration: Long = 1500 //  被击中后颤抖/无敌/模糊的毫秒数
+    private val hitDuration: Long = 2000 //  被击中后颤抖/无敌/模糊的毫秒数
 
     val boundingBox: RectF
         get() = RectF(x, y, x + width, y + height)

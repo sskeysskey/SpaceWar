@@ -24,17 +24,17 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private var updateThread: Thread? = null
     private var running = true
-    private var asteroidManager: AsteroidManager? = null
+    private var manager: Manager? = null
     private var bulletManager: BulletManager
     private var deathImage: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.death_image) as BitmapDrawable).bitmap
     private var dead = false
 
     private fun checkPlayerPowerUpCollision() {
-        val powerUp = asteroidManager?.powerUp
+        val powerUp = manager?.powerUp
 
         if (powerUp != null && player != null && RectF.intersects(player!!.boundingBox, powerUp.boundingBox) && player!!.powerUpLevel < 6) {
             player!!.powerUpLevel += 1
-            asteroidManager?.powerUp = null
+            manager?.powerUp = null
         }
     }
 
@@ -67,8 +67,8 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         if (player == null) {
             player = Player(plane, planeHit, w, h, context)
         }
-        if (asteroidManager == null) {
-            asteroidManager = AsteroidManager(context, w, h, bulletManager.playerbullets)
+        if (manager == null) {
+            manager = Manager(context, w, h, bulletManager.playerbullets)
         }
     }
 
@@ -78,11 +78,11 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         drawBackground(canvas)
         player?.draw(canvas)
         bulletManager.drawBullets(canvas)
-        asteroidManager?.drawAsteroids(canvas)
-        asteroidManager?.powerUp?.draw(canvas)
-        asteroidManager?.drawEnemies(canvas)
-        asteroidManager?.drawEnemyBullets(canvas)
-        asteroidManager?.drawBoss(canvas)
+        manager?.drawAsteroids(canvas)
+        manager?.powerUp?.draw(canvas)
+        manager?.drawEnemies(canvas)
+        manager?.drawEnemyBullets(canvas)
+        manager?.drawBoss(canvas)
 
         if (dead) {
             // 显示死亡图片
@@ -104,26 +104,27 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         bulletManager.updateBullets()
 
         synchronized(bulletManager.playerbullets) {
-            asteroidManager?.updateAsteroids()
-            asteroidManager?.updateBoss()
-            asteroidManager?.checkPlayerBulletAsteroidCollision()
+            manager?.updateAsteroids()
+
+            manager?.checkPlayerBulletAsteroidCollision()
         }
-        asteroidManager?.powerUp?.update()
+        manager?.powerUp?.update()
         checkPlayerPowerUpCollision()
 
         player?.let {
-            asteroidManager?.updateEnemies(it)
-            asteroidManager?.checkPlayerBulletEnemyCollision()
-            asteroidManager?.checkPlayerAsteroidCollision(it)
-            asteroidManager?.checkPlayerEnemyCollision(it)
-            asteroidManager?.checkEnemyBulletPlayerCollision(it)
-            asteroidManager?.checkPlayerBulletBossCollision()
+            manager?.updateEnemies(it)
+            manager?.updateBoss(it)
+            manager?.checkPlayerBulletEnemyCollision()
+            manager?.checkPlayerAsteroidCollision(it)
+            manager?.checkPlayerEnemyCollision(it)
+            manager?.checkEnemyBulletPlayerCollision(it)
+            manager?.checkPlayerBulletBossCollision()
 
             if (it.health <= 0) {
                 dead = true
             }
         }
-        asteroidManager?.updateEnemyBullets()
+        manager?.updateEnemyBullets()
     }
 
     private fun handleTouchEvent(event: MotionEvent) {

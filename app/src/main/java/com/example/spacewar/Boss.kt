@@ -6,12 +6,17 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
+import androidx.appcompat.content.res.AppCompatResources
 
-class Boss(private val context: Context, private val bitmap: Bitmap, var x: Float, var y: Float, private val screenWidth: Int, var health: Int) {
+class Boss(private val context: Context, private val bitmap: Bitmap, var x: Float, var y: Float, private val screenWidth: Int, var health: Int, private val laserResId: Int) {
     private val width = bitmap.width
     private val height = bitmap.height
     private val speed = 3f
     private var movingRight = true
+    val bosslaser = createBossLaser()
+    private var isFiring = false
+    private var fireTimer = 0
 
     // 添加 healthPaint 对象
     private val healthPaint = Paint().apply {
@@ -44,11 +49,33 @@ class Boss(private val context: Context, private val bitmap: Bitmap, var x: Floa
                 movingRight = true
             }
         }
+        fireTimer++
+
+        if (fireTimer > 5 * 60) {
+            isFiring = !isFiring
+            bosslaser.isActive = isFiring
+            fireTimer = 0
+        }
+
+        if (isFiring) {
+            bosslaser.x = this.x + this.width / 2 - bosslaser.width / 2
+        }
+    }
+    private fun createBossLaser(): BossLaser {
+        val bosslaserBitmap = (AppCompatResources.getDrawable(context, laserResId) as BitmapDrawable).bitmap
+        val bosslaserX = x + bitmap.width / 2f - bosslaserBitmap.width / 2f
+        val bosslaserY = y + bitmap.height
+        val screenHeight = context.resources.displayMetrics.heightPixels
+        return BossLaser(bosslaserBitmap, bosslaserX, bosslaserY, screenHeight)
     }
 
     fun draw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, x, y, null)
-        drawHealth(canvas)  // 在这里调用 drawHealth 方法
+        drawHealth(canvas)
+
+        if (isFiring) {
+            bosslaser.draw(canvas)
+        }
     }
 }
 
