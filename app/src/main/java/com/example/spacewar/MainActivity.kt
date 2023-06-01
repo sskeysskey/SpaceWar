@@ -3,6 +3,8 @@ package com.example.spacewar
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -11,38 +13,51 @@ class MainActivity : AppCompatActivity() {
     private var backgroundMusic: Int = 0
     private var shootSoundId: Int = 0
     private var isLoaded = false
+    private lateinit var launchPage: ImageView
+    private lateinit var startButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        gameView = GameView(this)
-        setContentView(gameView)
+        setContentView(R.layout.activity_main)
 
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_GAME)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
+        launchPage = findViewById(R.id.launchPage)
+        startButton = findViewById(R.id.startButton)
 
-        soundPool = SoundPool.Builder()
-            .setAudioAttributes(audioAttributes)
-            .setMaxStreams(2)
-            .build()
+        startButton.setOnClickListener {
+            gameView = GameView(this)
+            setContentView(gameView)
+            gameView.requestFocus()
 
-        backgroundMusic = soundPool.load(this, R.raw.background, 1)
-        shootSoundId = soundPool.load(this, R.raw.playershoot, 1)
+            // Initialize the SoundPool and load the audio files after game view is set
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
 
-        soundPool.setOnLoadCompleteListener { soundPool, sampleId, _ ->
-            isLoaded = true
-            if (sampleId == backgroundMusic) {
-                soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
-            } else if (sampleId == shootSoundId) {
-                soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
+            soundPool = SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                .setMaxStreams(2)
+                .build()
+
+            backgroundMusic = soundPool.load(this, R.raw.background, 1)
+            shootSoundId = soundPool.load(this, R.raw.playershoot, 1)
+
+            soundPool.setOnLoadCompleteListener { soundPool, sampleId, _ ->
+                isLoaded = true
+                if (sampleId == backgroundMusic) {
+                    soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
+                } else if (sampleId == shootSoundId) {
+                    soundPool.play(shootSoundId, 0.5f, 0.5f, 0, -1, 2f)
+                }
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        gameView.requestFocus()
+        if(::gameView.isInitialized){
+            gameView.requestFocus()
+        }
 
         if (isLoaded) {
             soundPool.play(backgroundMusic, 1f, 1f, 0, -1, 1f)
@@ -52,11 +67,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        soundPool.autoPause()
+        if(::soundPool.isInitialized){
+            soundPool.autoPause()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        gameView.stop()
+        if(::gameView.isInitialized){
+            gameView.stop()
+        }
     }
 }

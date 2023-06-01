@@ -382,5 +382,4 @@ class Manager(private val context: Context, private val width: Int, private val 
             }
         }, 0, 1500) // 每1500毫秒生成一个陨石
     }
-
 }
