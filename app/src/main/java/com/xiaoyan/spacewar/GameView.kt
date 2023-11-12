@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.app.Activity
 import android.content.Context
@@ -13,6 +13,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 
 class GameView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
     private val plane: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.player) as BitmapDrawable).bitmap
@@ -26,7 +27,9 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private var running = true
     private var manager: Manager? = null
     private var bulletManager: BulletManager
-    private var deathImage: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.death_image) as BitmapDrawable).bitmap
+    private var deathImage: Bitmap = (AppCompatResources.getDrawable(context,
+        R.drawable.death_image
+    ) as BitmapDrawable).bitmap
     private var dead = false
     private val restartButton: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.restart) as BitmapDrawable).bitmap
     private val reviveButton: Bitmap = (AppCompatResources.getDrawable(context, R.drawable.revive) as BitmapDrawable).bitmap
@@ -76,7 +79,15 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         updateThread = Thread {
             while (running) {
                 update()
-                Thread.sleep(10)
+                try {
+                    Thread.sleep(10)
+                } catch (e: InterruptedException) {
+                    // The thread was interrupted during sleep.
+                    // Break the loop if the thread was stopped.
+                    if (!running) {
+                        break
+                    }
+                }
             }
         }
         updateThread!!.start()
@@ -191,7 +202,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     fun stop() {
         running = false
-        updateThread?.interrupt()
+        updateThread?.join() // Wait for the thread to finish
         bulletManager.stop() // 在这里调用 BulletManager 的 stop 方法
     }
 

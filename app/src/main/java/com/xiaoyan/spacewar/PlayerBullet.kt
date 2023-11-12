@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import java.util.Timer
 import java.util.TimerTask
 
@@ -32,7 +33,9 @@ class BulletManager(context: Context, private val gameView: GameView) {
     private val playerbulletTimer = Timer()
 
     private val playerbulletBitmap: Bitmap = run {
-        val originalplayerBulletBitmap = (AppCompatResources.getDrawable(context, R.drawable.bulletplayer) as BitmapDrawable).bitmap
+        val originalplayerBulletBitmap = (AppCompatResources.getDrawable(context,
+            R.drawable.bulletplayer
+        ) as BitmapDrawable).bitmap
         val scaleFactor = 0.5f // 子弹的尺寸和大小
         val newWidth = (originalplayerBulletBitmap.width * scaleFactor).toInt()
         val newHeight = (originalplayerBulletBitmap.height * scaleFactor).toInt()

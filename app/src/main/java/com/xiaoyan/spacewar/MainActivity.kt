@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.media.AudioAttributes
 import android.media.SoundPool
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.spacewar.R
 
 class MainActivity : AppCompatActivity() {
     private lateinit var gameView: GameView
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //测试是否可同步github
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

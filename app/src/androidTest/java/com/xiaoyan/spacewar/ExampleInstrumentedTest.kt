@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

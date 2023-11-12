@@ -1,8 +1,9 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import java.util.Timer
 import java.util.TimerTask
 

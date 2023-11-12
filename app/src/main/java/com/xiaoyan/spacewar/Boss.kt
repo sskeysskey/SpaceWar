@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import kotlin.math.cos
 import kotlin.math.sin
 

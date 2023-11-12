@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

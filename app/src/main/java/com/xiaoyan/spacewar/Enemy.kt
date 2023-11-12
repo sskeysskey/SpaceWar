@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -6,6 +6,7 @@ import android.graphics.RectF
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import kotlin.random.Random
 
 class Enemy(private val context: Context, val bitmap: Bitmap, var x: Float, var y: Float, var health: Int, private val type: Int) {

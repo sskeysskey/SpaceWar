@@ -1,9 +1,10 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import kotlin.math.sin
 
 class Player(val normalBitmap: Bitmap, private val hitBitmap: Bitmap, private val screenWidth: Int, private val screenHeight: Int, context: Context) {

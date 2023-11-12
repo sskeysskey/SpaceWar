@@ -1,4 +1,4 @@
-package com.example.spacewar
+package com.xiaoyan.spacewar
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,6 +7,7 @@ import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.media.MediaPlayer
 import androidx.appcompat.content.res.AppCompatResources
+import com.example.spacewar.R
 import java.util.Timer
 import java.util.TimerTask
 
@@ -17,9 +18,13 @@ class Manager(private val context: Context, private val width: Int, private val 
     private val enemyManager = EnemyManager(context, width, height)
     private var asteroidsNeededForPowerUp = 5
     private val explosions = mutableListOf<Explosion>()
-    private val explosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.asteroid_explosion) as BitmapDrawable).bitmap
+    private val explosionBitmap = (AppCompatResources.getDrawable(context,
+        R.drawable.asteroid_explosion
+    ) as BitmapDrawable).bitmap
     private val bossexplosions = mutableListOf<Explosion>()
-    private val bossexplosionBitmap = (AppCompatResources.getDrawable(context, R.drawable.boss_explosion) as BitmapDrawable).bitmap
+    private val bossexplosionBitmap = (AppCompatResources.getDrawable(context,
+        R.drawable.boss_explosion
+    ) as BitmapDrawable).bitmap
     private val enemyBullets = mutableListOf<EnemyBullet>()
     var boss1: Boss? = null
     var boss2: Boss? = null
