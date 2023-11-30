@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //测试专用11.30
+        //测试专用11.31
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
