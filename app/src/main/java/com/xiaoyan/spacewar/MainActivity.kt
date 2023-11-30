@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //测试是否可同步github
+        //再次测试是否可同步github
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
